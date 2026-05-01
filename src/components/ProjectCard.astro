@@ -72,16 +72,20 @@ const { title, tagline, summary, techStack, slug, githubUrl, timeline, role } = 
     border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
-    transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+    transition:
+      border-color var(--transition-base),
+      box-shadow 0.35s ease,
+      transform 0.35s ease;
     box-shadow: var(--shadow-card);
     overflow: hidden;
+    will-change: transform;
   }
 
-  /* Fix: use color-mix so hover shadow adapts to dark mode instead of hardcoded rgba */
+  /* Enhanced 3D tilt hover */
   .project-card:hover {
     border-color: var(--color-accent);
-    box-shadow: 0 8px 32px color-mix(in srgb, var(--color-accent) 15%, transparent);
-    transform: translateY(-2px);
+    box-shadow: 0 16px 48px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    transform: translateY(-4px) perspective(800px) rotateX(-1deg) rotateY(1.5deg);
   }
 
   .project-card__body {

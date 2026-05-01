@@ -1,8 +1,14 @@
 ---
 import { site } from '../data/site';
+import HeroCanvas from './HeroCanvas';
 ---
 
 <section class="hero" id="hero" aria-label="Introduction">
+  <!-- WebGL particle background (React island) -->
+  <div class="hero__canvas-wrap">
+    <HeroCanvas client:only="react" />
+  </div>
+
   <div class="container hero__inner">
     <!-- Text Side -->
     <div class="hero__content">
@@ -41,46 +47,9 @@ import { site } from '../data/site';
         </a>
       </div>
 
-      <p class="hero__meta">{site.hero.meta}</p>
-    </div>
-
-    <!-- Visual Side -->
-    <div class="hero__visual" aria-hidden="true">
-      <div class="hero__visual-frame">
-        <!-- Decorative geometric SVG — placeholder for future WebGL canvas -->
-        <svg class="hero__geometry" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <!-- Outer ring -->
-          <circle cx="200" cy="200" r="160" fill="none" stroke="var(--color-accent)" stroke-width="1" stroke-dasharray="6 10" opacity="0.3" />
-          <!-- Middle ring -->
-          <circle cx="200" cy="200" r="110" fill="none" stroke="var(--color-accent)" stroke-width="1" opacity="0.2" />
-          <!-- Inner ring -->
-          <circle cx="200" cy="200" r="60" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.4" />
-          <!-- Core dot -->
-          <circle cx="200" cy="200" r="8" fill="var(--color-accent)" opacity="0.8" />
-          <!-- Grid lines -->
-          <line x1="40" y1="200" x2="360" y2="200" stroke="var(--color-border)" stroke-width="1" />
-          <line x1="200" y1="40" x2="200" y2="360" stroke="var(--color-border)" stroke-width="1" />
-          <!-- Corner marks -->
-          <path d="M40 60 L40 40 L60 40" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.5" />
-          <path d="M340 60 L360 60 L360 40 L340 40" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.5" />
-          <path d="M40 340 L40 360 L60 360" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.5" />
-          <path d="M340 340 L360 340 L360 360 L340 360" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.5" />
-          <!-- Orbital dots -->
-          <circle cx="200" cy="40" r="4" fill="var(--color-accent)" opacity="0.6" />
-          <circle cx="360" cy="200" r="4" fill="var(--color-accent)" opacity="0.4" />
-          <circle cx="200" cy="360" r="4" fill="var(--color-accent)" opacity="0.3" />
-          <circle cx="88" cy="112" r="3" fill="var(--color-accent)" opacity="0.5" />
-          <circle cx="312" cy="88" r="3" fill="var(--color-accent)" opacity="0.35" />
-          <!-- Diagonal accent -->
-          <line x1="90" y1="90" x2="310" y2="310" stroke="var(--color-accent)" stroke-width="1" stroke-dasharray="4 8" opacity="0.15" />
-          <line x1="310" y1="90" x2="90" y2="310" stroke="var(--color-accent)" stroke-width="1" stroke-dasharray="4 8" opacity="0.15" />
-        </svg>
-        <!-- Badge overlay -->
-        <div class="hero__badge">
-          <span class="hero__badge-label">v0</span>
-          <span class="hero__badge-sub">WebGL ready</span>
-        </div>
-      </div>
+      {(site.hero as any).meta && (
+        <p class="hero__meta">{(site.hero as any).meta}</p>
+      )}
     </div>
   </div>
 </section>
@@ -107,6 +76,7 @@ import { site } from '../data/site';
     background-size: 48px 48px;
     opacity: 0.4;
     pointer-events: none;
+    z-index: 0;
   }
 
   .hero::after {
@@ -115,21 +85,30 @@ import { site } from '../data/site';
     inset: 0;
     background: radial-gradient(ellipse 60% 60% at 70% 50%, transparent 40%, var(--color-bg) 100%);
     pointer-events: none;
-  }
-
-  .hero__inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: var(--space-16);
-    padding-top: var(--space-16);
-    padding-bottom: var(--space-16);
-    position: relative;
     z-index: 1;
   }
 
+  /* WebGL canvas wrapper */
+  .hero__canvas-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+    position: relative;
+    z-index: 2;
+    min-height: calc(100svh - var(--nav-height));
+  }
+
   .hero__content {
-    max-width: 580px;
+    max-width: 620px;
   }
 
   .hero__eyebrow {
@@ -187,75 +166,8 @@ import { site } from '../data/site';
     font-family: var(--font-mono);
   }
 
-  /* Visual */
-  .hero__visual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .hero__visual-frame {
-    position: relative;
-    width: min(400px, 100%);
-    aspect-ratio: 1;
-  }
-
-  .hero__geometry {
-    width: 100%;
-    height: 100%;
-    animation: slow-rotate 60s linear infinite;
-  }
-
-  @keyframes slow-rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  .hero__badge {
-    position: absolute;
-    bottom: 12%;
-    right: 8%;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-2) var(--space-4);
-    box-shadow: var(--shadow-md);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .hero__badge-label {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    font-weight: var(--weight-bold);
-    color: var(--color-accent);
-    letter-spacing: var(--tracking-wider);
-    text-transform: uppercase;
-  }
-
-  .hero__badge-sub {
-    font-size: 10px;
-    color: var(--color-text-muted);
-    white-space: nowrap;
-  }
-
   /* Responsive */
   @media (max-width: 900px) {
-    .hero__inner {
-      grid-template-columns: 1fr;
-      gap: var(--space-12);
-    }
-
-    .hero__visual {
-      order: -1;
-    }
-
-    .hero__visual-frame {
-      width: min(280px, 80%);
-    }
-
     .hero__content {
       max-width: 100%;
     }
@@ -268,10 +180,6 @@ import { site } from '../data/site';
 
     .hero__ctas {
       flex-direction: column;
-    }
-
-    .hero__visual-frame {
-      width: min(240px, 90%);
     }
   }
 </style>

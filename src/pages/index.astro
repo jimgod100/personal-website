@@ -8,11 +8,13 @@ import ProjectGrid from '../components/ProjectGrid.astro';
 import Skills from '../components/Skills.astro';
 import EducationGoals from '../components/EducationGoals.astro';
 import Contact from '../components/Contact.astro';
+import ScrollPath from '../components/ScrollPath.astro';
 import { site } from '../data/site';
 ---
 
 <Layout title={site.title} description={site.description}>
   <Nav />
+  <ScrollPath />
   <main id="main-content">
     <Hero />
     <About />
@@ -27,7 +29,7 @@ import { site } from '../data/site';
       <p class="footer__copy">
         &copy; {new Date().getFullYear()} {site.name}. Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>.
       </p>
-      <p class="footer__note">v0 — WebGL upgrade planned</p>
+      <p class="footer__note">v1 — Lusion-inspired</p>
     </div>
   </footer>
 </Layout>
