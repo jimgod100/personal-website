@@ -13,6 +13,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import ParticleField from './ParticleField';
 import WireframeZone from './WireframeZone';
+import HeroPhysicsZone from './HeroPhysicsZone';
+import ScrollTube from './ScrollTube';
 import { useCameraScroll } from './useCameraScroll';
 import { useCameraIntro } from './useCameraIntro';
 
@@ -97,8 +99,16 @@ export default function SceneWorld() {
     <>
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
-      <ParticleField densityRef={scrollData} baseColor={accentColor.current} />
-      <WireframeZone  opacity={scrollData.current.wireframeOpacity} baseColor={accentColor.current} />
+      <ParticleField densityRef={scrollData} baseColor={accentColor} />
+      
+      {/* Zone 2 Wireframes */}
+      <WireframeZone opacity={scrollData.current.wireframeOpacity} baseColor={accentColor} />
+
+      {/* Physics Stacking Crosses */}
+      <HeroPhysicsZone baseColor={accentColor} />
+
+      {/* Dynamic Scroll Tube */}
+      <ScrollTube color={accentColor} />
     </>
   );
 }

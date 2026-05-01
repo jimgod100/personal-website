@@ -115,14 +115,39 @@ import { site } from '../data/site';
   
   if (!prefersReducedMotion) {
     const layers = document.querySelectorAll<HTMLElement>('.parallax-layer');
-    
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
+    const skewElements = document.querySelectorAll<HTMLElement>('.project-card, .about__card, .experience__item');
+
+    let currentScroll = window.scrollY;
+    let targetScroll = window.scrollY;
+
+    function lerp(start: number, end: number, factor: number) {
+      return start + (end - start) * factor;
+    }
+
+    function rafLoop() {
+      targetScroll = window.scrollY;
+      currentScroll = lerp(currentScroll, targetScroll, 0.1);
+      
+      const velocity = targetScroll - currentScroll;
+      let normalizedV = Math.abs(velocity) / 50;
+      normalizedV = Math.min(Math.max(normalizedV, 0), 1);
+      const skewAngle = normalizedV * 1.5 * Math.sign(velocity); // Max 1.5 degrees
+
       layers.forEach(layer => {
         const speed = parseFloat(layer.style.getPropertyValue('--parallax-speed') || '0');
-        if (speed === 0) return;
-        layer.style.transform = `translateY(${scrollY * speed * -1}px)`;
+        if (speed !== 0) {
+          layer.style.transform = `translateY(${targetScroll * speed * -1}px)`;
+        }
       });
-    }, { passive: true });
+
+      skewElements.forEach(el => {
+        // preserve other transforms if needed, but for these cards, overriding is okay
+        el.style.transform = `skewY(${skewAngle}deg)`;
+      });
+
+      requestAnimationFrame(rafLoop);
+    }
+    
+    requestAnimationFrame(rafLoop);
   }
 </script>
