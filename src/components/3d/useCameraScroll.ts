@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import { useEffect, useRef } from 'react';
-import { interpolateTimeline } from './sceneTimeline';
-
-export function useCameraScroll() {
-  const scrollData = useRef(interpolateTimeline(0));
-=======
 /**
  * useCameraScroll — maps page scroll progress (0→1) to scene timeline state.
  * Uses a ref (not state) so that reading in useFrame never triggers React re-renders.
@@ -14,17 +7,12 @@ import { interpolateTimeline, type TimelineState } from './sceneTimeline';
 
 export function useCameraScroll() {
   const scrollData = useRef<TimelineState>(interpolateTimeline(0));
->>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
-<<<<<<< HEAD
-      
-=======
->>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
       scrollData.current = interpolateTimeline(progress);
     };
 

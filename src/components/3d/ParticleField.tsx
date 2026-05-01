@@ -7,13 +7,12 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface Props {
-  densityRef: React.MutableRefObject<{ particleDensity: number }>; // ref to avoid re-renders
+  density: number;    // 0–1 from scrollData.current.particleDensity
   baseColor: string;
 }
 
-export default function ParticleField({ densityRef, baseColor }: Props) {
+export default function ParticleField({ density, baseColor }: Props) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const currentOpacity = useRef(0.6);
 
   // Guard against SSR where window is undefined
   const MAX_COUNT = useMemo(() => {
@@ -35,18 +34,16 @@ export default function ParticleField({ densityRef, baseColor }: Props) {
     return { positions: pos, phases: phs };
   }, [MAX_COUNT]);
 
-  const scales = useMemo(() => new Float32Array(MAX_COUNT).fill(1), [MAX_COUNT]);
-
   useFrame((state) => {
     if (!meshRef.current) return;
-    
+
     const activeCount = Math.floor(MAX_COUNT * density);
     meshRef.current.count = activeCount;
-    
+
     if (activeCount === 0) return;
 
     const time = state.clock.elapsedTime;
-    
+
     for (let i = 0; i < activeCount; i++) {
       const x = positions[i * 3 + 0];
       const y = positions[i * 3 + 1];
@@ -58,8 +55,7 @@ export default function ParticleField({ densityRef, baseColor }: Props) {
         y + Math.cos(time * 0.3 + phase) * 0.5,
         z,
       );
-      
-      // Pulse scale
+
       const scale = 1 + Math.sin(time * 1.5 + phase) * 0.5;
       dummy.scale.set(scale, scale, scale);
       dummy.updateMatrix();
