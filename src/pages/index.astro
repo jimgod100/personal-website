@@ -16,13 +16,27 @@ import { site } from '../data/site';
   <Nav />
   <ScrollPath />
   <main id="main-content">
-    <Hero />
-    <About />
-    <Experience />
-    <ProjectGrid />
-    <Skills />
-    <EducationGoals />
-    <Contact />
+    <div class="parallax-layer" style="--parallax-speed: 0;">
+      <Hero />
+    </div>
+    <div class="parallax-layer" style="--parallax-speed: 0.1;">
+      <About />
+    </div>
+    <div class="parallax-layer" style="--parallax-speed: 0.15;">
+      <Experience />
+    </div>
+    <div class="parallax-layer" style="--parallax-speed: 0.2;">
+      <ProjectGrid />
+    </div>
+    <div class="parallax-layer" style="--parallax-speed: 0.25;">
+      <Skills />
+    </div>
+    <div class="parallax-layer" style="--parallax-speed: 0.3;">
+      <EducationGoals />
+    </div>
+    <div class="parallax-layer" style="--parallax-speed: 0.1;">
+      <Contact />
+    </div>
   </main>
   <footer class="footer">
     <div class="container footer__inner">
@@ -77,3 +91,38 @@ import { site } from '../data/site';
     }
   }
 </style>
+
+<script>
+  // Intersection Observer for lightweight scroll reveals
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.3 }
+  );
+
+  document.querySelectorAll('[data-motion]').forEach((el) => {
+    observer.observe(el);
+  });
+
+  // Parallax effect for HTML sections
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    const layers = document.querySelectorAll<HTMLElement>('.parallax-layer');
+    
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      layers.forEach(layer => {
+        const speed = parseFloat(layer.style.getPropertyValue('--parallax-speed') || '0');
+        if (speed === 0) return;
+        layer.style.transform = `translateY(${scrollY * speed * -1}px)`;
+      });
+    }, { passive: true });
+  }
+</script>

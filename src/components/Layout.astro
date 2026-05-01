@@ -2,7 +2,9 @@
 import { site } from '../data/site';
 import '../styles/tokens.css';
 import '../styles/global.css';
+import '../styles/scroll-reveal.css';
 import SmoothScrollProvider from './SmoothScrollProvider.astro';
+import WorldCanvas from './WorldCanvas';
 
 interface Props {
   title?: string;
@@ -67,14 +69,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://jimwang.
     </script>
   </head>
   <body>
-    <slot />
+    <WorldCanvas client:only="react" />
+    <div id="html-layer" style="position: relative; z-index: 1;">
+      <slot />
+    </div>
 
     <!-- Smooth scroll + ScrollTrigger wiring -->
     <SmoothScrollProvider />
   </body>
 </html>
 
-<!-- Scroll reveal animations -->
-<script>
-  import '../scripts/scroll-animations';
-</script>
+
