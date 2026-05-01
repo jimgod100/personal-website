@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeading from './SectionHeading.astro';
+import ProjectCard from './ProjectCard.astro';
+
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="projects section" id="projects" aria-label="Projects">
+  <div class="container">
+    <SectionHeading label="Projects">
+      <h2 class="section-title">Selected work</h2>
+    </SectionHeading>
+
+    <div class="projects__grid">
+      {featuredProjects.map((project) => (
+        <ProjectCard
+          title={project.data.title}
+          tagline={project.data.tagline}
+          summary={project.data.summary}
+          techStack={project.data.techStack}
+          slug={project.id}
+          githubUrl={project.data.githubUrl}
+          timeline={project.data.timeline}
+          role={project.data.role}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    background: var(--color-bg-subtle);
+  }
+
+  .projects__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 480px) {
+    .projects__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

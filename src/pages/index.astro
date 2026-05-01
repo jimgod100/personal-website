@@ -1,0 +1,77 @@
+---
+import Layout from '../components/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Experience from '../components/Experience.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import Skills from '../components/Skills.astro';
+import EducationGoals from '../components/EducationGoals.astro';
+import Contact from '../components/Contact.astro';
+import { site } from '../data/site';
+---
+
+<Layout title={site.title} description={site.description}>
+  <Nav />
+  <main id="main-content">
+    <Hero />
+    <About />
+    <Experience />
+    <ProjectGrid />
+    <Skills />
+    <EducationGoals />
+    <Contact />
+  </main>
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__copy">
+        &copy; {new Date().getFullYear()} {site.name}. Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>.
+      </p>
+      <p class="footer__note">v0 — WebGL upgrade planned</p>
+    </div>
+  </footer>
+</Layout>
+
+<style>
+  .footer {
+    padding: var(--space-8) 0;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg);
+  }
+
+  .footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .footer__copy {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .footer__copy a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .footer__copy a:hover {
+    text-decoration: underline;
+  }
+
+  .footer__note {
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 480px) {
+    .footer__inner {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--space-2);
+    }
+  }
+</style>

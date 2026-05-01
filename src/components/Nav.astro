@@ -1,0 +1,300 @@
+---
+import { site } from '../data/site';
+---
+
+<header class="nav" id="nav" role="banner">
+  <div class="nav__inner container">
+    <!-- Logo / Name -->
+    <a href="/" class="nav__logo" aria-label="Home">
+      <span class="nav__logo-name">{site.name}</span>
+      <span class="nav__logo-dot" aria-hidden="true">.</span>
+    </a>
+
+    <!-- Desktop links -->
+    <nav class="nav__links" aria-label="Primary navigation">
+      <a href="#projects" class="nav__link">Projects</a>
+      <a href="#about" class="nav__link">About</a>
+      <a href="#contact" class="nav__link">Contact</a>
+    </nav>
+
+    <div class="nav__actions">
+      <!-- Theme toggle -->
+      <button
+        id="theme-toggle"
+        class="theme-toggle"
+        aria-label="Toggle dark mode"
+        type="button"
+      >
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+
+      <!-- Mobile hamburger -->
+      <button
+        id="menu-toggle"
+        class="menu-toggle"
+        aria-label="Toggle mobile menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        type="button"
+      >
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="mobile-menu" role="navigation" aria-label="Mobile navigation" hidden>
+    <nav class="mobile-menu__nav">
+      <a href="#projects" class="mobile-menu__link">Projects</a>
+      <a href="#about" class="mobile-menu__link">About</a>
+      <a href="#contact" class="mobile-menu__link">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // ---------- Theme Toggle ----------
+  const themeToggle = document.getElementById('theme-toggle') as HTMLButtonElement;
+  let currentTheme = document.documentElement.getAttribute('data-theme') ?? 'light';
+
+  function applyTheme(theme: string) {
+    document.documentElement.setAttribute('data-theme', theme);
+    currentTheme = theme;
+  }
+
+  themeToggle?.addEventListener('click', () => {
+    applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  // ---------- Mobile Menu ----------
+  const menuToggle = document.getElementById('menu-toggle') as HTMLButtonElement;
+  const mobileMenu = document.getElementById('mobile-menu') as HTMLElement;
+  let menuOpen = false;
+
+  function toggleMenu(open: boolean) {
+    menuOpen = open;
+    mobileMenu.hidden = !open;
+    menuToggle.setAttribute('aria-expanded', String(open));
+    menuToggle.classList.toggle('is-open', open);
+  }
+
+  menuToggle?.addEventListener('click', () => toggleMenu(!menuOpen));
+
+  // Close menu on mobile link click
+  mobileMenu?.querySelectorAll('.mobile-menu__link').forEach((link) => {
+    link.addEventListener('click', () => toggleMenu(false));
+  });
+
+  // ---------- Scroll — Nav shadow ----------
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav?.classList.toggle('nav--scrolled', window.scrollY > 16);
+  }, { passive: true });
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    background: var(--color-nav-bg);
+    border-bottom: 1px solid transparent;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .nav--scrolled {
+    border-bottom-color: var(--color-nav-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .nav__logo {
+    display: flex;
+    align-items: baseline;
+    gap: 1px;
+    text-decoration: none;
+    font-weight: var(--weight-semibold);
+    font-size: var(--text-lg);
+    color: var(--color-text);
+    letter-spacing: var(--tracking-tight);
+    transition: color var(--transition-fast);
+  }
+
+  .nav__logo:hover {
+    color: var(--color-accent);
+  }
+
+  .nav__logo-dot {
+    color: var(--color-accent);
+    font-size: var(--text-2xl);
+    line-height: 1;
+  }
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .nav__link {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-subtle);
+    text-decoration: none;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    transition: color var(--transition-fast);
+    padding: var(--space-1) 0;
+    position: relative;
+  }
+
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-accent);
+    transition: width var(--transition-base);
+    border-radius: var(--radius-full);
+  }
+
+  .nav__link:hover {
+    color: var(--color-text);
+  }
+
+  .nav__link:hover::after {
+    width: 100%;
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Theme toggle */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--color-text-subtle);
+    transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-text);
+    border-color: var(--color-border-muted);
+    background: var(--color-bg-subtle);
+  }
+
+  .theme-toggle__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .theme-toggle__icon--moon { display: none; }
+
+  :global([data-theme="dark"]) .theme-toggle__icon--sun { display: none; }
+  :global([data-theme="dark"]) .theme-toggle__icon--moon { display: block; }
+
+  /* Hamburger */
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    padding: 0;
+    transition: border-color var(--transition-fast);
+  }
+
+  .menu-toggle__bar {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: var(--color-text-subtle);
+    border-radius: var(--radius-full);
+    transition: transform var(--transition-base), opacity var(--transition-base);
+    transform-origin: center;
+  }
+
+  .menu-toggle.is-open .menu-toggle__bar:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .menu-toggle.is-open .menu-toggle__bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .menu-toggle.is-open .menu-toggle__bar:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-menu__nav {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4) 0;
+  }
+
+  .mobile-menu__link {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-base);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-subtle);
+    text-decoration: none;
+    transition: color var(--transition-fast), background var(--transition-fast);
+  }
+
+  .mobile-menu__link:hover {
+    color: var(--color-text);
+    background: var(--color-bg-subtle);
+  }
+
+  @media (max-width: 768px) {
+    .nav__links {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: flex;
+    }
+  }
+</style>

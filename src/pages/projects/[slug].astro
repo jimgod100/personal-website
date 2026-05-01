@@ -1,0 +1,348 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Layout from '../../components/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import { site } from '../../data/site';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, tagline, summary, techStack, role, timeline, githubUrl, liveUrl } = project.data;
+---
+
+
+<Layout
+  title={`${title} — ${site.name}`}
+  description={summary}
+>
+  <Nav />
+  <main id="main-content" class="project-page">
+    <div class="container project-page__inner">
+      <!-- Back link -->
+      <a href="/#projects" class="project-page__back">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="project-page__back-icon" aria-hidden="true">
+          <path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd" />
+        </svg>
+        All projects
+      </a>
+
+      <div class="project-page__layout">
+        <!-- Content -->
+        <article class="project-page__content">
+          <header class="project-page__header">
+            <p class="project-page__timeline">{timeline}</p>
+            <h1 class="project-page__title">{title}</h1>
+            <p class="project-page__tagline">{tagline}</p>
+          </header>
+
+          <div class="project-page__body prose">
+            <Content />
+          </div>
+        </article>
+
+        <!-- Sidebar -->
+        <aside class="project-page__sidebar">
+          <div class="project-page__meta-card">
+            <div class="project-page__meta-section">
+              <h2 class="project-page__meta-label">Role</h2>
+              <p class="project-page__meta-value">{role}</p>
+            </div>
+            <div class="project-page__meta-section">
+              <h2 class="project-page__meta-label">Timeline</h2>
+              <p class="project-page__meta-value">{timeline}</p>
+            </div>
+            <div class="project-page__meta-section">
+              <h2 class="project-page__meta-label">Tech Stack</h2>
+              <div class="project-page__stack">
+                {techStack.map((tech) => (
+                  <span class="tech-badge">{tech}</span>
+                ))}
+              </div>
+            </div>
+            {(githubUrl || liveUrl) && (
+              <div class="project-page__meta-section project-page__meta-links">
+                {githubUrl && (
+                  <a
+                    href={githubUrl}
+                    class="btn btn--secondary btn--sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="btn__icon btn__icon--left" style="width:16px;height:16px;" aria-hidden="true">
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 5.303 3.438 9.8 8.207 11.387.6.11.793-.26.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.085 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12Z"/>
+                    </svg>
+                    View on GitHub
+                  </a>
+                )}
+                {liveUrl && (
+                  <a
+                    href={liveUrl}
+                    class="btn btn--primary btn--sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Live Demo
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__copy">
+        &copy; {new Date().getFullYear()} {site.name}. <a href="/">← Back to portfolio</a>
+      </p>
+    </div>
+  </footer>
+</Layout>
+
+<style>
+  .project-page {
+    padding-top: var(--nav-height);
+    min-height: 100svh;
+    background: var(--color-bg);
+  }
+
+  .project-page__inner {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-16);
+  }
+
+  .project-page__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: var(--space-10);
+    transition: color var(--transition-fast);
+  }
+
+  .project-page__back:hover {
+    color: var(--color-accent);
+  }
+
+  .project-page__back-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .project-page__layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  /* Header */
+  .project-page__header {
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-page__timeline {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .project-page__title {
+    font-size: clamp(var(--text-2xl), 3.5vw, var(--text-4xl));
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .project-page__tagline {
+    font-size: var(--text-lg);
+    color: var(--color-accent-text);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+  }
+
+  /* Prose body */
+  .prose {
+    color: var(--color-text-subtle);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    max-width: var(--max-width-prose);
+  }
+
+  .prose :global(h2) {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-4);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .prose :global(h3) {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-3);
+  }
+
+  .prose :global(p) {
+    margin-bottom: var(--space-5);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: var(--space-6);
+    margin-bottom: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .prose :global(li) {
+    line-height: var(--leading-relaxed);
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--color-bg-muted);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-accent-text);
+  }
+
+  .prose :global(pre) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    overflow-x: auto;
+    margin-bottom: var(--space-6);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+
+  .prose :global(strong) {
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+  }
+
+  .prose :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--space-10) 0;
+  }
+
+  /* Sidebar */
+  .project-page__meta-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-6));
+  }
+
+  .project-page__meta-section {
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-page__meta-section:last-child {
+    border-bottom: none;
+  }
+
+  .project-page__meta-label {
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  .project-page__meta-value {
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+  }
+
+  .project-page__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .project-page__meta-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer {
+    padding: var(--space-8) 0;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg);
+  }
+
+  .footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer__copy {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .footer__copy a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  @media (max-width: 900px) {
+    .project-page__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .project-page__sidebar {
+      order: -1;
+    }
+
+    .project-page__meta-card {
+      position: static;
+    }
+  }
+</style>

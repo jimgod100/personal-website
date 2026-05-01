@@ -1,0 +1,168 @@
+---
+import { experience } from '../data/experience';
+import SectionHeading from './SectionHeading.astro';
+---
+
+<section class="experience section" id="experience" aria-label="Experience">
+  <div class="container">
+    <SectionHeading label="Experience">
+      <h2 class="section-title">Where I've worked</h2>
+    </SectionHeading>
+
+    <div class="experience__list">
+      {experience.map((job) => (
+        <article class="experience__item">
+          <div class="experience__header">
+            <div class="experience__title-group">
+              <h3 class="experience__role">{job.role}</h3>
+              <p class="experience__company">
+                {job.company}
+                <span class="experience__dept">— {job.department}</span>
+              </p>
+            </div>
+            <div class="experience__meta">
+              <span class="experience__period">{job.period}</span>
+              <span class="experience__location">{job.location}</span>
+            </div>
+          </div>
+
+          <p class="experience__summary">{job.summary}</p>
+
+          <ul class="experience__bullets">
+            {job.bullets.map((bullet) => (
+              <li class="experience__bullet">
+                <span class="experience__bullet-icon" aria-hidden="true">→</span>
+                {bullet}
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .experience {
+    background: var(--color-bg);
+  }
+
+  .experience__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .experience__item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .experience__item:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 24px rgba(26, 163, 156, 0.08);
+  }
+
+  .experience__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-6);
+    margin-bottom: var(--space-5);
+  }
+
+  .experience__role {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+    margin-bottom: var(--space-1);
+  }
+
+  .experience__company {
+    font-size: var(--text-base);
+    font-weight: var(--weight-medium);
+    color: var(--color-accent);
+  }
+
+  .experience__dept {
+    font-weight: var(--weight-regular);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .experience__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-1);
+    flex-shrink: 0;
+  }
+
+  .experience__period {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+  }
+
+  .experience__location {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .experience__summary {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-subtle);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .experience__bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .experience__bullet {
+    display: flex;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-subtle);
+  }
+
+  .experience__bullet-icon {
+    flex-shrink: 0;
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    margin-top: 3px;
+    font-weight: var(--weight-bold);
+  }
+
+  @media (max-width: 640px) {
+    .experience__header {
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .experience__meta {
+      align-items: flex-start;
+      flex-direction: row;
+      gap: var(--space-3);
+    }
+
+    .experience__item {
+      padding: var(--space-6);
+    }
+  }
+</style>
