@@ -1,11 +1,23 @@
 ---
 title: "SME Loan Origination Platform"
 tagline: "Full-stack digital lending workflow covering case creation, KYC/AML, credit scoring, and disbursement."
-tags: ["C#", "Java", "Spring Boot", "ASP.NET", "RabbitMQ", "MSSQL", "Oracle", "Vue.js", "Angular", "Kubernetes", "Azure"]
-period: "2024 — Present"
-role: "Software Engineer"
-company: "CTBC Bank"
+summary: "Built and maintained a full-stack SME loan origination platform at CTBC Bank, handling multi-state business workflows across backend services (C#, Java), async messaging (RabbitMQ), relational databases (MSSQL, Oracle), and frontend interfaces (Vue.js, Angular) in a Kubernetes/Azure environment."
+role: "Software Engineer — CTBC Bank"
+timeline: "2024 — Present"
 featured: true
+techStack:
+  - C#
+  - ASP.NET
+  - Java
+  - Spring Boot
+  - RabbitMQ
+  - MSSQL
+  - Oracle
+  - Vue.js
+  - Angular
+  - Kubernetes
+  - Azure
+order: 1
 ---
 
 ## Problem
