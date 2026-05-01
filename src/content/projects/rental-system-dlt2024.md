@@ -1,9 +1,11 @@
 ---
 title: "Smart Rental Platform with LINE Bot AI"
 tagline: "ASP.NET MVC rental system integrated with LINE Bot and AI features — DLT2024 Excellent Paper Award."
+summary: "Full-stack rental platform connecting landlords and tenants via web and LINE Bot, with AI-assisted responses. Awarded Excellent Paper at DLT2024 Symposium."
 timeline: "2024 Q1 — Q2"
 role: "Lead Developer (Capstone Project)"
 stack: ["C#", "ASP.NET MVC", "LINE Bot SDK", "Azure", "SQL Server", "Bootstrap"]
+techStack: ["C#", "ASP.NET MVC", "LINE Bot SDK", "Azure", "SQL Server", "Bootstrap"]
 github: "https://github.com/jimgod100"
 featured: true
 order: 2
