@@ -39,7 +39,7 @@ function initScrollReveal() {
     
     if (motion === 'fade-up') fromVars = { opacity: 0, y: 30 };
     else if (motion === 'fade-in') fromVars = { opacity: 0 };
-    else if (motion === 'blur-in') fromVars = { opacity: 0, filter: 'blur(8px)', y: 20 };
+    else if (motion === 'blur-in') fromVars = { opacity: 0, filter: 'blur(4px)', y: 16 };
     else if (motion === 'scale-up') fromVars = { opacity: 0, scale: 0.95, y: 20 };
 
     gsap.fromTo(el, 
@@ -49,8 +49,10 @@ function initScrollReveal() {
         y: 0,
         scale: 1,
         filter: 'blur(0px)',
-        duration: 0.8,
+        duration: motion === 'blur-in' ? 0.6 : 0.8,
         ease: 'power2.out',
+        onStart: motion === 'blur-in' ? () => { (el as HTMLElement).style.willChange = 'filter, opacity'; } : undefined,
+        onComplete: motion === 'blur-in' ? () => { (el as HTMLElement).style.willChange = 'auto'; } : undefined,
         scrollTrigger: {
           trigger: el,
           start: 'top 85%',
@@ -68,16 +70,21 @@ function initScrollReveal() {
   });
 
   staggerGroups.forEach(groupName => {
-    const elements = document.querySelectorAll<HTMLElement>(`[data-motion-stagger-group="${groupName}"]`);
+    // Select only the children that actually have data-motion (not the group container itself)
+    const elements = document.querySelectorAll<HTMLElement>(
+      `[data-motion-stagger-group="${groupName}"] [data-motion], [data-motion-stagger-group="${groupName}"][data-motion]`
+    );
     if (elements.length === 0) return;
     
-    const motion = elements[0].getAttribute('data-motion');
+    // Find the first element that actually has data-motion set
+    const motionEl = Array.from(elements).find(el => el.hasAttribute('data-motion'));
+    const motion = motionEl?.getAttribute('data-motion') ?? 'fade-up';
     let fromVars: gsap.TweenVars = { opacity: 0 };
     
     if (motion === 'fade-up') fromVars = { opacity: 0, y: 30 };
     else if (motion === 'fade-in') fromVars = { opacity: 0 };
     else if (motion === 'scale-up') fromVars = { opacity: 0, y: 40, scale: 0.97 };
-    else if (motion === 'blur-in') fromVars = { opacity: 0, filter: 'blur(4px)', y: 20 };
+    else if (motion === 'blur-in') fromVars = { opacity: 0, filter: 'blur(4px)', y: 16 };
 
     gsap.fromTo(elements, 
       fromVars,
@@ -86,9 +93,11 @@ function initScrollReveal() {
         y: 0,
         scale: 1,
         filter: 'blur(0px)',
-        duration: 0.7,
+        duration: motion === 'blur-in' ? 0.5 : 0.7,
         stagger: 0.1,
         ease: 'power2.out',
+        onStart: motion === 'blur-in' ? function(this: any) { this.targets().forEach((t: any) => t.style.willChange = 'filter, opacity'); } : undefined,
+        onComplete: motion === 'blur-in' ? function(this: any) { this.targets().forEach((t: any) => t.style.willChange = 'auto'); } : undefined,
         scrollTrigger: {
           trigger: elements[0],
           start: 'top 85%',

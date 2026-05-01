@@ -96,20 +96,29 @@ function DataNetwork({ count, isDark, reducedMotion }: DataNetworkProps) {
 
   // Set initial colors for nodes
   useEffect(() => {
-    if (!meshRef.current) return;
-    const mesh = meshRef.current;
-    const color = new Color();
-
-    for (let i = 0; i < count; i++) {
-      const t = Math.random();
-      if (t < 0.5) color.set(palette.primary);
-      else if (t < 0.8) color.set(palette.secondary);
-      else color.set(palette.tertiary);
-      
-      mesh.setColorAt(i, color);
+    // Retry up to 5 times in case mesh isn't mounted yet (initial render race)
+    let attempts = 0;
+    function applyColors() {
+      if (!meshRef.current) {
+        if (attempts < 5) {
+          attempts++;
+          setTimeout(applyColors, 100);
+        }
+        return;
+      }
+      const mesh = meshRef.current;
+      const color = new Color();
+      for (let i = 0; i < count; i++) {
+        const t = Math.random();
+        if (t < 0.5) color.set(palette.primary);
+        else if (t < 0.8) color.set(palette.secondary);
+        else color.set(palette.tertiary);
+        mesh.setColorAt(i, color);
+      }
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     }
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  }, [count, palette]);
+    applyColors();
+  }, [count, palette.primary]);
 
   // Scroll listener
   useEffect(() => {

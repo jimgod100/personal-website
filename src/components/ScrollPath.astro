@@ -8,6 +8,7 @@
 
 <div class="scroll-path-container" aria-hidden="true">
   <svg
+    id="scroll-path-svg"
     class="scroll-path-svg"
     viewBox="0 0 200 3000"
     fill="none"
@@ -100,59 +101,110 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  function getPageHeight(): number {
+    return Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight
+    );
+  }
+
+  function buildPathD(h: number): string {
+    // Generates a flowing S-curve path from top (y=0) to bottom (y=h)
+    const seg = h / 10; // 10 segments
+    return [
+      `M 100 0`,
+      `C 100 ${seg * 0.8}, 160 ${seg * 1.2}, 160 ${seg * 2}`,
+      `S 40 ${seg * 3}, 40 ${seg * 4}`,
+      `C 40 ${seg * 4.8}, 170 ${seg * 5.2}, 170 ${seg * 6}`,
+      `S 30 ${seg * 7}, 30 ${seg * 8}`,
+      `C 30 ${seg * 8.5}, 150 ${seg * 8.8}, 150 ${seg * 9}`,
+      `S 100 ${seg * 9.7}, 100 ${h}`,
+    ].join(' ');
+  }
+
   function initScrollPath() {
     const prefersReducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches;
     if (prefersReducedMotion) return;
 
+    const svg = document.getElementById('scroll-path-svg') as SVGSVGElement | null;
     const path = document.getElementById('scroll-thread') as SVGPathElement | null;
     const glow = document.getElementById('scroll-thread-glow') as SVGPathElement | null;
-    if (!path) return;
+    if (!svg || !path) return;
 
-    // getTotalLength must be called after DOM mount
-    const length = path.getTotalLength();
+    function setup() {
+      const h = getPageHeight();
 
-    // Start: fully hidden (offset = length)
-    path.style.strokeDasharray = `${length}`;
-    path.style.strokeDashoffset = `${length}`;
+      // Update viewBox to match real page height
+      svg!.setAttribute('viewBox', `0 0 200 ${h}`);
 
-    if (glow) {
-      const glowLength = glow.getTotalLength();
-      glow.style.strokeDasharray = `${glowLength}`;
-      glow.style.strokeDashoffset = `${glowLength}`;
-    }
+      // Regenerate path shapes
+      const d = buildPathD(h);
+      path!.setAttribute('d', d);
+      if (glow) glow.setAttribute('d', d);
 
-    // Animate: draw the path over the entire page scroll
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: document.body,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1,
-      },
-    });
+      // Reset dasharray/offset
+      const length = path!.getTotalLength();
+      path!.style.strokeDasharray = `${length}`;
+      path!.style.strokeDashoffset = `${length}`;
 
-    if (glow) {
-      gsap.to(glow, {
+      if (glow) {
+        const glowLength = glow.getTotalLength();
+        glow.style.strokeDasharray = `${glowLength}`;
+        glow.style.strokeDashoffset = `${glowLength}`;
+      }
+
+      // Kill existing ScrollTrigger instances for scroll-path to re-create
+      ScrollTrigger.getAll()
+        .filter(st => (st as any)._id?.toString().includes('scroll-path'))
+        .forEach(st => st.kill());
+
+      gsap.to(path, {
         strokeDashoffset: 0,
         ease: 'none',
         scrollTrigger: {
+          id: 'scroll-path-main',
           trigger: document.body,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1.5,
+          scrub: 1,
         },
       });
+
+      if (glow) {
+        gsap.to(glow, {
+          strokeDashoffset: 0,
+          ease: 'none',
+          scrollTrigger: {
+            id: 'scroll-path-glow',
+            trigger: document.body,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1.5,
+          },
+        });
+      }
+
+      ScrollTrigger.refresh();
     }
+
+    // Initial setup after fonts/images settle
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(setup, 100));
+    } else {
+      setTimeout(setup, 100);
+    }
+
+    // Re-run on resize (debounced)
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(setup, 300);
+    });
   }
 
-  // Wait for DOM to be fully ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initScrollPath);
-  } else {
-    initScrollPath();
-  }
+  initScrollPath();
 </script>

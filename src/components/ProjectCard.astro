@@ -75,17 +75,19 @@ const { title, tagline, summary, techStack, slug, githubUrl, timeline, role } = 
     transition:
       border-color var(--transition-base),
       box-shadow 0.35s ease,
-      transform 0.35s ease;
+      transform 0.15s ease;
     box-shadow: var(--shadow-card);
     overflow: hidden;
     will-change: transform;
   }
 
-  /* Enhanced 3D tilt hover */
+  /* Enhanced hover */
   .project-card:hover {
     border-color: var(--color-accent);
     box-shadow: 0 16px 48px color-mix(in srgb, var(--color-accent) 18%, transparent);
-    transform: translateY(-4px) perspective(800px) rotateX(-1deg) rotateY(1.5deg);
+  }
+  .project-card.is-tilting {
+    transform-style: preserve-3d;
   }
 
   .project-card__body {
@@ -228,3 +230,34 @@ const { title, tagline, summary, techStack, slug, githubUrl, timeline, role } = 
     transition: transform var(--transition-base);
   }
 </style>
+
+<script>
+  function initCardTilt() {
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+    if (prefersReducedMotion) return;
+
+    document.querySelectorAll<HTMLElement>('.project-card').forEach((card) => {
+      card.addEventListener('mousemove', (e: MouseEvent) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;   // -0.5 to 0.5
+        const y = (e.clientY - rect.top) / rect.height - 0.5;   // -0.5 to 0.5
+        card.style.transform =
+          `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 8}deg) translateY(-4px)`;
+        card.classList.add('is-tilting');
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.classList.remove('is-tilting');
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCardTilt);
+  } else {
+    initCardTilt();
+  }
+</script>
