@@ -2,16 +2,31 @@ export const experience = [
   {
     role: "Software Engineer",
     company: "CTBC Bank",
-    period: "2024 — Present",
+    dept: "Financial Technology",
+    period: "Jul 2025 — Present",
+    location: "Taipei, Taiwan",
     summary:
-      "Built and maintained internal financial systems powering SME lending workflows at one of Taiwan's largest financial institutions.",
+      "Building and maintaining internal financial systems powering SME lending workflows at one of Taiwan's largest financial institutions.",
     bullets: [
-      "Developed and maintained a full-stack SME loan origination platform covering case creation, KYC/AML verification, credit scoring integration, and disbursement — handling multi-state business workflows with strict audit and compliance requirements.",
-      "Built backend services in C# (ASP.NET) and Java (Spring Boot), coordinating synchronous REST APIs and asynchronous event processing via RabbitMQ to decouple high-volume workflow steps.",
-      "Optimized complex SQL queries and stored procedures across MSSQL and Oracle databases, reducing report generation latency and improving reliability of time-sensitive financial operations.",
-      "Implemented dynamic PDF document generation for loan agreements, KYC reports, and approval notices, integrating template engines with real-time data from multiple upstream systems.",
-      "Built and maintained frontend interfaces in Vue.js and Angular, collaborating with operations teams to translate business rules into usable workflow UIs.",
-      "Worked in a containerized deployment environment using Kubernetes and Azure, participating in CI/CD pipeline maintenance and production incident response."
-    ]
-  }
+      "Developed RESTful APIs and microservices in Java Spring Boot for core banking systems, supporting 500+ daily transactions.",
+      "Built responsive UIs with Angular/TypeScript for internal workflow management and budget analysis tools.",
+      "Led agile development of an enterprise budget analysis application (Angular frontend + Spring Boot Maven backend) used across business units.",
+      "Collaborated with compliance and operations teams to implement multi-state business workflow logic with strict audit trail requirements.",
+    ],
+  },
+  {
+    role: "Cloud Intern",
+    company: "Taipei Fubon Bank",
+    dept: "Cloud Infrastructure",
+    period: "Jul 2024 — Jun 2025",
+    location: "Taipei, Taiwan",
+    summary:
+      "Deployed and managed cloud infrastructure across Azure and GCP, supporting private cloud migration and observability initiatives.",
+    bullets: [
+      "Deployed and managed Azure/GCP environments with RBAC and containerization (OpenShift OCP / GDC Anthos), optimizing for 99.9% uptime SLA targets.",
+      "Implemented an observability stack (ELK, Grafana, Prometheus) to proactively monitor cloud infrastructure health and surface anomalies before incidents.",
+      "Contributed to the Azure Landing Zone rollout, establishing governance policies, networking baselines, and identity configurations across teams.",
+      "Participated in private cloud migration planning, coordinating workload assessments and environment provisioning across infrastructure and application teams.",
+    ],
+  },
 ];
