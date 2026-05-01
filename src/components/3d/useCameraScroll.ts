@@ -1,31 +1,35 @@
+<<<<<<< HEAD
 import { useEffect, useRef } from 'react';
 import { interpolateTimeline } from './sceneTimeline';
 
 export function useCameraScroll() {
   const scrollData = useRef(interpolateTimeline(0));
+=======
+/**
+ * useCameraScroll — maps page scroll progress (0→1) to scene timeline state.
+ * Uses a ref (not state) so that reading in useFrame never triggers React re-renders.
+ */
+import { useEffect, useRef } from 'react';
+import { interpolateTimeline, type TimelineState } from './sceneTimeline';
+
+export function useCameraScroll() {
+  const scrollData = useRef<TimelineState>(interpolateTimeline(0));
+>>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
 
   useEffect(() => {
     const handleScroll = () => {
-      // Calculate scroll progress (0 to 1)
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const docHeight = Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.offsetHeight
-      );
-      const winHeight = window.innerHeight;
-      
-      const maxScroll = docHeight - winHeight;
+      const scrollTop = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+<<<<<<< HEAD
       
+=======
+>>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
       scrollData.current = interpolateTimeline(progress);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleScroll, { passive: true });
-    
-    // Initial call
     handleScroll();
 
     return () => {
@@ -34,5 +38,5 @@ export function useCameraScroll() {
     };
   }, []);
 
-  return scrollData;
+  return scrollData; // MutableRefObject<TimelineState> — read .current inside useFrame
 }

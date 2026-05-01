@@ -1,26 +1,22 @@
 export const skillGroups = [
   {
     title: "Languages",
-    items: ["C#", "Java", "JavaScript", "TypeScript", "Python", "SQL"],
+    items: ["C#", "Java", "JavaScript", "TypeScript", "SQL", "Python"]
   },
   {
     title: "Frameworks",
-    items: ["Spring Boot", "ASP.NET", "Angular", "React", "Vue.js"],
+    items: ["React", "Vue.js", "Spring Boot", "ASP.NET", "Angular"]
   },
   {
     title: "Databases",
-    items: ["MSSQL", "Oracle", "SQLite", "Redis"],
+    items: ["MSSQL", "Oracle", "MariaDB", "Redis"]
   },
   {
-    title: "Cloud & Infra",
-    items: ["Azure", "GCP", "Kubernetes (OCP/Anthos)", "Docker", "GitHub Actions", "Linux"],
-  },
-  {
-    title: "Observability",
-    items: ["Grafana", "Prometheus", "ELK Stack", "RabbitMQ"],
+    title: "Infra & Tools",
+    items: ["Kubernetes", "Azure", "Docker", "RabbitMQ", "GitHub Actions", "Linux"]
   },
   {
     title: "Interests",
-    items: ["AI Engineering", "Distributed Systems", "LLM Integration", "WebGL / Creative Dev"],
-  },
+    items: ["AI Engineering", "Distributed Systems", "Platform Engineering", "WebGL / Creative Dev"]
+  }
 ];
