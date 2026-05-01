@@ -159,7 +159,7 @@
 
       // Kill existing ScrollTrigger instances for scroll-path to re-create
       ScrollTrigger.getAll()
-        .filter(st => (st as any)._id?.toString().includes('scroll-path'))
+        .filter(st => st.vars.id?.toString().startsWith('scroll-path'))
         .forEach(st => st.kill());
 
       gsap.to(path, {

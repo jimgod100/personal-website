@@ -8,9 +8,8 @@ export const site = {
   github: "https://github.com/jimgod100",
   linkedin: "https://linkedin.com/in/峻淵-汪-8096952bb",
   hero: {
-    headline: "Fintech Software Engineer transitioning toward CS/AI-focused global tech roles.",
-    subheadline:
-      "I build reliable systems for complex business workflows, with experience across backend services, cloud infrastructure, distributed queues, and full-stack product development.",
+    headline: "Fintech Engineer,\nAiming Global.",
+    subheadline: "Building reliable systems for complex business workflows — backend services, distributed queues, and full-stack product development. Transitioning toward CS/AI-focused roles at top global tech companies.",
     primaryCta: {
       label: "View Projects",
       href: "#projects",
