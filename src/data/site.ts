@@ -17,7 +17,7 @@ export const site = {
     },
     secondaryCta: {
       label: "Download Resume",
-      href: "/resume.pdf",
+      href: "/Resume.pdf",
     },
   },
   about: [
