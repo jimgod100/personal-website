@@ -7,11 +7,11 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface Props {
-  density: number;    // 0–1 from scrollData.current.particleDensity
+  densityRef: React.MutableRefObject<{ particleDensity: number }>;
   baseColor: string;
 }
 
-export default function ParticleField({ density, baseColor }: Props) {
+export default function ParticleField({ densityRef, baseColor }: Props) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
 
   // Guard against SSR where window is undefined
@@ -34,17 +34,28 @@ export default function ParticleField({ density, baseColor }: Props) {
     return { positions: pos, phases: phs };
   }, [MAX_COUNT]);
 
+  // Track scales for smooth fade out
+  const scales = useMemo(() => new Float32Array(MAX_COUNT).fill(1), [MAX_COUNT]);
+
   useFrame((state) => {
     if (!meshRef.current) return;
 
-    const activeCount = Math.floor(MAX_COUNT * density);
-    meshRef.current.count = activeCount;
-
-    if (activeCount === 0) return;
+    // Guard against max count changes
+    if (meshRef.current.count !== MAX_COUNT) {
+      meshRef.current.count = MAX_COUNT;
+    }
 
     const time = state.clock.elapsedTime;
+    const targetActiveCount = MAX_COUNT * densityRef.current.particleDensity;
 
-    for (let i = 0; i < activeCount; i++) {
+    for (let i = 0; i < MAX_COUNT; i++) {
+      // Smooth fade out: target scale is 1 if within active count, 0 otherwise
+      const targetBaseScale = i < targetActiveCount ? 1 : 0;
+      scales[i] = THREE.MathUtils.lerp(scales[i], targetBaseScale, 0.1);
+
+      // Skip matrix updates for fully invisible particles
+      if (scales[i] < 0.01 && targetBaseScale === 0) continue;
+
       const x = positions[i * 3 + 0];
       const y = positions[i * 3 + 1];
       const z = positions[i * 3 + 2];
@@ -56,7 +67,8 @@ export default function ParticleField({ density, baseColor }: Props) {
         z,
       );
 
-      const scale = 1 + Math.sin(time * 1.5 + phase) * 0.5;
+      // Combine base visibility scale with pulsing scale
+      const scale = scales[i] * (1 + Math.sin(time * 1.5 + phase) * 0.5);
       dummy.scale.set(scale, scale, scale);
       dummy.updateMatrix();
       meshRef.current.setMatrixAt(i, dummy.matrix);

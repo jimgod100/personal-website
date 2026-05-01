@@ -97,7 +97,7 @@ export default function SceneWorld() {
     <>
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
-      <ParticleField density={scrollData.current.particleDensity} baseColor={accentColor.current} />
+      <ParticleField densityRef={scrollData} baseColor={accentColor.current} />
       <WireframeZone  opacity={scrollData.current.wireframeOpacity} baseColor={accentColor.current} />
     </>
   );
