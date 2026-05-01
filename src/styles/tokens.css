@@ -45,6 +45,7 @@
   --color-border-muted: var(--color-neutral-300);
 
   --color-text:         var(--color-neutral-900);
+  /* Deepened from neutral-700 (#495057) to ensure 6:1+ contrast on light bg */
   --color-text-subtle:  #3d4249;
   --color-text-muted:   var(--color-neutral-600);
   --color-text-inverse: #ffffff;
@@ -60,10 +61,11 @@
   /* ----------------------------------------------------------
      Typography
   ---------------------------------------------------------- */
-  --font-display: 'Cabinet Grotesk', 'Inter', sans-serif;
-  --font-body:    'Inter', -apple-system, sans-serif;
-  --font-sans:    var(--font-body);
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  /* Display font: Cabinet Grotesk (loaded via Fontshare in Layout.astro) */
+  --font-display: 'Cabinet Grotesk', 'Inter', -apple-system, sans-serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body:    var(--font-sans);
+  --font-mono:    'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
   --text-xs:   0.75rem;   /* 12px */
   --text-sm:   0.875rem;  /* 14px */
@@ -80,6 +82,7 @@
   --weight-medium:  500;
   --weight-semibold: 600;
   --weight-bold:    700;
+  --weight-extrabold: 800;
 
   --leading-tight:  1.2;
   --leading-snug:   1.375;
@@ -126,6 +129,8 @@
 
   /* ----------------------------------------------------------
      Shadows — Light Mode
+     Warm-toned (hue 80, low chroma) to match the neutral-50 surface.
+     Pure rgba(0,0,0) creates a cold-tone mismatch on warm surfaces.
   ---------------------------------------------------------- */
   --shadow-sm:   0 1px 2px oklch(0.15 0.01 80 / 0.05);
   --shadow-md:   0 4px 12px oklch(0.15 0.01 80 / 0.08);
@@ -167,6 +172,7 @@
   --color-nav-bg:       rgba(15, 17, 19, 0.9);
   --color-nav-border:   var(--color-neutral-800);
 
+  /* Dark mode shadows: higher opacity, pure black is fine on dark surfaces */
   --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md:   0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.5);
