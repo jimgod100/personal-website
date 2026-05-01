@@ -18,7 +18,7 @@ export default function SceneWorld() {
 
   // Manage Fog
   useEffect(() => {
-    scene.fog = new THREE.FogExp2(fogColor, scrollData.fogDensity);
+    scene.fog = new THREE.FogExp2(fogColor, scrollData.current.fogDensity);
     scene.background = new THREE.Color(fogColor);
     return () => {
       scene.fog = null;
@@ -28,7 +28,7 @@ export default function SceneWorld() {
   // Update Fog density dynamically based on scroll
   useFrame(() => {
     if (scene.fog instanceof THREE.FogExp2) {
-      scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, scrollData.fogDensity, 0.05);
+      scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, scrollData.current.fogDensity, 0.05);
     }
   });
 
@@ -48,14 +48,14 @@ export default function SceneWorld() {
     if (!introFinished.current) return; // Let GSAP handle intro
 
     // Lerp camera Z position based on scroll timeline
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, scrollData.cameraZ, 0.08);
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, scrollData.current.cameraZ, 0.08);
     
     // Add subtle Y breathing + scroll Y drift
     const breathY = Math.sin(Date.now() * 0.001) * 0.1;
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, scrollData.cameraY + breathY, 0.08);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, scrollData.current.cameraY + breathY, 0.08);
 
     // Mouse parallax (strongest when scroll is 0, fades out as we move deep)
-    const parallaxFactor = Math.max(0, 1 - scrollData.cameraZ / 20);
+    const parallaxFactor = Math.max(0, 1 - scrollData.current.cameraZ / 20);
     if (parallaxFactor > 0) {
       camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.current.x * 0.5 * parallaxFactor, 0.05);
       camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, -mouse.current.x * 0.05 * parallaxFactor, 0.05);
@@ -73,10 +73,10 @@ export default function SceneWorld() {
       <directionalLight position={[10, 10, 5]} intensity={1} />
       
       {/* Zone 1 & Background Particles */}
-      <ParticleField density={scrollData.particleDensity} baseColor={accentColor} />
+      <ParticleField densityRef={scrollData} baseColor={accentColor} />
       
       {/* Zone 2 Wireframes */}
-      <WireframeZone opacity={scrollData.wireframeOpacity} baseColor={accentColor} />
+      <WireframeZone opacity={scrollData.current.wireframeOpacity} baseColor={accentColor} />
     </>
   );
 }

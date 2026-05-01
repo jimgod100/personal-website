@@ -3,11 +3,11 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface Props {
-  density: number; // 0 to 1
+  densityRef: React.MutableRefObject<{ particleDensity: number }>; // ref to avoid re-renders
   baseColor: string;
 }
 
-export default function ParticleField({ density, baseColor }: Props) {
+export default function ParticleField({ densityRef, baseColor }: Props) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   
   // Use a fixed max count and hide unused particles
@@ -28,17 +28,21 @@ export default function ParticleField({ density, baseColor }: Props) {
     return { positions: pos, phases: phs };
   }, [MAX_COUNT]);
 
+  const scales = useMemo(() => new Float32Array(MAX_COUNT).fill(1), [MAX_COUNT]);
+
   useFrame((state) => {
     if (!meshRef.current) return;
     
-    const activeCount = Math.floor(MAX_COUNT * density);
-    meshRef.current.count = activeCount;
-    
-    if (activeCount === 0) return;
-
+    const targetActiveCount = MAX_COUNT * densityRef.current.particleDensity;
     const time = state.clock.elapsedTime;
     
-    for (let i = 0; i < activeCount; i++) {
+    for (let i = 0; i < MAX_COUNT; i++) {
+      // Lerp scale towards 1 if active, 0 if inactive
+      const targetBaseScale = i < targetActiveCount ? 1 : 0;
+      scales[i] = THREE.MathUtils.lerp(scales[i], targetBaseScale, 0.1);
+      
+      if (scales[i] < 0.01 && targetBaseScale === 0) continue;
+
       const x = positions[i * 3 + 0];
       const y = positions[i * 3 + 1];
       const z = positions[i * 3 + 2];
@@ -52,7 +56,7 @@ export default function ParticleField({ density, baseColor }: Props) {
       );
       
       // Pulse scale
-      const scale = 1 + Math.sin(time * 1.5 + phase) * 0.5;
+      const scale = scales[i] * (1 + Math.sin(time * 1.5 + phase) * 0.5);
       dummy.scale.set(scale, scale, scale);
       
       dummy.updateMatrix();

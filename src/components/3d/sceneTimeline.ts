@@ -5,6 +5,10 @@ export const sceneTimeline = [
   { scroll: 1.0,  cameraZ: 40, cameraY: 0,    particleDensity: 0.0, wireframeOpacity: 0.0, fogDensity: 0.08 },
 ];
 
+function easeInOut(t: number): number {
+  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
+
 export function interpolateTimeline(progress: number) {
   // Clamp progress
   const p = Math.max(0, Math.min(1, progress));
@@ -21,10 +25,12 @@ export function interpolateTimeline(progress: number) {
   const next = sceneTimeline[idx + 1] || current;
 
   // Local progress between the two keyframes
-  let localP = 0;
+  let rawLocalP = 0;
   if (next.scroll > current.scroll) {
-    localP = (p - current.scroll) / (next.scroll - current.scroll);
+    rawLocalP = (p - current.scroll) / (next.scroll - current.scroll);
   }
+  
+  const localP = easeInOut(rawLocalP);
 
   return {
     cameraZ: current.cameraZ + (next.cameraZ - current.cameraZ) * localP,

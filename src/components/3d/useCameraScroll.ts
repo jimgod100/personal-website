@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { interpolateTimeline } from './sceneTimeline';
 
 export function useCameraScroll() {
-  const [scrollData, setScrollData] = useState(() => interpolateTimeline(0));
+  const scrollData = useRef(interpolateTimeline(0));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,7 +19,7 @@ export function useCameraScroll() {
       const maxScroll = docHeight - winHeight;
       const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
       
-      setScrollData(interpolateTimeline(progress));
+      scrollData.current = interpolateTimeline(progress);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
