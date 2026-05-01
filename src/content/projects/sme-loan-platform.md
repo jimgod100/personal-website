@@ -1,12 +1,13 @@
 ---
 title: "SME Loan Origination Platform"
-slug: "sme-loan-platform"
-date: "2024-07"
-tags: ["C#", ".NET", "Java", "Spring Boot", "MSSQL", "Oracle", "RabbitMQ", "Vue.js", "Angular", "Kubernetes", "Azure"]
-role: "Software Engineer"
-company: "CTBC Bank"
-status: "Production"
+tagline: "End-to-end digital lending workflow for small and medium enterprise loans"
 summary: "An internal full-stack platform managing end-to-end SME loan workflows — from case creation and KYC/AML checks to credit scoring, multi-stage approval routing, and disbursement."
+role: "Software Engineer"
+timeline: "2024 — Present"
+featured: true
+techStack: ["C#", ".NET", "Java", "Spring Boot", "MSSQL", "Oracle", "RabbitMQ", "Vue.js", "Angular", "Kubernetes", "Azure"]
+order: 1
+githubUrl: "https://github.com/jimgod100/sme-loan-origination-platform"
 ---
 
 ## Problem
