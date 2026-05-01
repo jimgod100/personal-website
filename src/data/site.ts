@@ -4,30 +4,30 @@ export const site = {
   description:
     "Fintech software engineer transitioning toward CS/AI-focused global tech roles.",
   location: "Taipei, Taiwan",
-  email: "80206jim@gmail.com",
+  email: "80206jim@email.com",
   github: "https://github.com/jimgod100",
   linkedin: "https://linkedin.com/in/峻淵-汪-8096952bb",
   hero: {
-    headline: "Fintech Engineer,\nAiming Global.",
-    subheadline: "Building reliable systems for complex business workflows — backend services, distributed queues, and full-stack product development. Transitioning toward CS/AI-focused roles at top global tech companies.",
+    headline: "Fintech Software Engineer transitioning toward CS/AI-focused global tech roles.",
+    subheadline:
+      "I build reliable systems for complex business workflows, with experience across backend services, databases, distributed queues, and full-stack product development.",
     primaryCta: {
       label: "View Projects",
       href: "#projects",
     },
     secondaryCta: {
       label: "Download Resume",
-      href: "/Resume.pdf",
+      href: "/resume.pdf",
     },
   },
   about: [
-    "I currently work at CTBC Bank on internal financial services systems — specifically an SME loan origination platform handling case creation, KYC/AML checks, credit scoring, and disbursement workflows across multiple integrated systems.",
-    "Previously at Taipei Fubon Bank as a Cloud Intern, where I deployed and managed Azure/GCP environments, implemented an observability stack (ELK, Grafana, Prometheus), and contributed to the Azure Landing Zone rollout.",
-    "I am moving toward computer science and AI-oriented software engineering, with long-term goals in global technology companies. I care about building reliable, scalable systems that solve real operational problems.",
+    "I currently work at CTBC Bank on internal financial services systems — specifically an SME loan origination platform that handles case creation, multi-state workflows, KYC/AML verification, credit scoring, and disbursement. The stack spans C#/.NET, Java Spring Boot, MSSQL, Oracle, RabbitMQ, Vue.js, and Angular, deployed on Kubernetes in Azure.",
+    "I am moving toward computer science and AI-oriented software engineering, with long-term goals in global technology companies. I am preparing for a CS Master's degree focused on applied AI and distributed systems.",
+    "I care about building reliable, scalable systems that solve real operational problems — and about understanding the engineering decisions behind them, not just making them work."
   ],
   goals: {
     headline: "Next Step",
     body:
-      "I am preparing for graduate study in CS or AI, and seeking software engineering opportunities that deepen my CS foundation and expand my work into larger-scale distributed systems and AI-integrated products.",
-    openTo: "Graduate programs (CS/AI) · Software engineering roles at global tech companies",
-  },
+      "I am preparing for graduate study and software engineering opportunities that deepen my CS foundation and expand my work into larger-scale software systems — particularly in AI infrastructure, platform engineering, and distributed services."
+  }
 };
