@@ -26,25 +26,21 @@ function getThemeColors() {
 
 export default function SceneWorld() {
   const { scene, camera } = useThree();
-  const scrollData  = useCameraScroll();   // MutableRefObject<TimelineState>
-  const introFinished = useCameraIntro();  // MutableRefObject<boolean>
+  const scrollData    = useCameraScroll();   // MutableRefObject<TimelineState>
+  const introFinished = useCameraIntro();    // MutableRefObject<boolean>
 
   const accentColor = useRef(getThemeColors().accent);
   const mouse       = useRef({ x: 0, y: 0 });
 
-  // ── Initial fog & background setup ──────────────────────────────────────
+  // ── Initial fog & background setup ───────────────────────────────────────
   useEffect(() => {
-<<<<<<< HEAD
-    scene.fog = new THREE.FogExp2(fogColor, scrollData.current.fogDensity);
-=======
     const { fogColor } = getThemeColors();
     scene.fog        = new THREE.FogExp2(fogColor, 0.02);
->>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
     scene.background = new THREE.Color(fogColor);
     return () => { scene.fog = null; };
   }, [scene]);
 
-  // ── Live dark-mode sync via MutationObserver ─────────────────────────────
+  // ── Live dark-mode sync via MutationObserver ───────────────────────────
   useEffect(() => {
     const sync = () => {
       const { fogColor, accent } = getThemeColors();
@@ -57,19 +53,7 @@ export default function SceneWorld() {
     return () => observer.disconnect();
   }, [scene]);
 
-<<<<<<< HEAD
-  // Update Fog density dynamically based on scroll
-  useFrame(() => {
-    if (scene.fog instanceof THREE.FogExp2) {
-      scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, scrollData.current.fogDensity, 0.05);
-    }
-  });
-
-  // Mouse Parallax for Zone 1 (Hero)
-  const mouse = useRef({ x: 0, y: 0 });
-=======
-  // ── Mouse parallax listener ──────────────────────────────────────────────
->>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
+  // ── Mouse parallax listener ────────────────────────────────────────────
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       mouse.current.x = (e.clientX / window.innerWidth)  *  2 - 1;
@@ -83,17 +67,6 @@ export default function SceneWorld() {
   useFrame(() => {
     const sd = scrollData.current;
 
-<<<<<<< HEAD
-    // Lerp camera Z position based on scroll timeline
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, scrollData.current.cameraZ, 0.08);
-    
-    // Add subtle Y breathing + scroll Y drift
-    const breathY = Math.sin(Date.now() * 0.001) * 0.1;
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, scrollData.current.cameraY + breathY, 0.08);
-
-    // Mouse parallax (strongest when scroll is 0, fades out as we move deep)
-    const parallaxFactor = Math.max(0, 1 - scrollData.current.cameraZ / 20);
-=======
     // Update fog density from scroll timeline
     if (scene.fog instanceof THREE.FogExp2) {
       scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, sd.fogDensity, 0.05);
@@ -109,7 +82,6 @@ export default function SceneWorld() {
 
     // Mouse parallax fades as camera moves deep into scene
     const parallaxFactor = Math.max(0, 1 - sd.cameraZ / 20);
->>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
     if (parallaxFactor > 0) {
       camera.position.x  = THREE.MathUtils.lerp(camera.position.x,  mouse.current.x *  0.5  * parallaxFactor, 0.05);
       camera.rotation.y  = THREE.MathUtils.lerp(camera.rotation.y,  -mouse.current.x * 0.05 * parallaxFactor, 0.05);
@@ -125,17 +97,8 @@ export default function SceneWorld() {
     <>
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
-<<<<<<< HEAD
-      
-      {/* Zone 1 & Background Particles */}
-      <ParticleField densityRef={scrollData} baseColor={accentColor} />
-      
-      {/* Zone 2 Wireframes */}
-      <WireframeZone opacity={scrollData.current.wireframeOpacity} baseColor={accentColor} />
-=======
       <ParticleField density={scrollData.current.particleDensity} baseColor={accentColor.current} />
       <WireframeZone  opacity={scrollData.current.wireframeOpacity} baseColor={accentColor.current} />
->>>>>>> 23b3f0e60ece85cc70904d249b700c0153cf803d
     </>
   );
 }
