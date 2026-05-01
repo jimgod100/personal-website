@@ -132,8 +132,8 @@ import { site } from '../data/site';
   }
   .hero__headline {
     font-family: var(--font-display);
+    font-weight: var(--weight-extrabold);
     font-size: clamp(var(--text-3xl), 4vw, var(--text-5xl));
-    font-weight: var(--weight-bold);
     line-height: var(--leading-tight);
     letter-spacing: var(--tracking-tight);
     color: var(--color-text);
@@ -188,9 +188,8 @@ import { site } from '../data/site';
     50% { transform: translateX(-50%) translateY(8px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero__scroll-hint {
-      animation: none;
-    }
+    .hero__eyebrow-dot { animation: none; }
+    .hero__scroll-hint { animation: none; }
   }
   /* Responsive */
   @media (max-width: 900px) {
@@ -216,7 +215,6 @@ import { site } from '../data/site';
       '(prefers-reduced-motion: reduce)'
     ).matches;
 
-    // Elements to animate in order
     const targets = [
       '.hero__eyebrow',
       '.hero__headline',
@@ -230,7 +228,6 @@ import { site } from '../data/site';
       return;
     }
 
-    // Set hidden state first to prevent FOUC
     gsap.set(targets, { opacity: 0, y: 32 });
 
     gsap.to(targets, {
@@ -239,7 +236,7 @@ import { site } from '../data/site';
       duration: 0.85,
       stagger: 0.13,
       ease: 'power3.out',
-      delay: 0.2, // small delay so canvas loads first
+      delay: 0.2,
     });
   }
 
