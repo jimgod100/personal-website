@@ -29,7 +29,7 @@ import HeroCanvas from './HeroCanvas';
         >
           {site.hero.primaryCta.label}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="btn__icon" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 0 1 0-1.06L9.44 9.5 5.22 5.28a.75.75 0 0 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 0 0 1 0l9.44-9.5 5.22 5.28a.75.75 0 0 0 1 1.06-1.06l4.75 4.75a.75.75 0 0 0 1.061-4.75 4.75a.75.75 0 0 0-1.06 0Z" clip-rule="evenodd" />
           </svg>
         </a>
         <a
@@ -52,6 +52,13 @@ import HeroCanvas from './HeroCanvas';
       )}
     </div>
   </div>
+
+  <!-- Scroll hint -->
+  <a href="#projects" class="hero__scroll-hint" aria-label="Scroll down">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  </a>
 </section>
 
 <style>
@@ -64,7 +71,6 @@ import HeroCanvas from './HeroCanvas';
     position: relative;
     overflow: hidden;
   }
-
   /* Subtle grid background */
   .hero::before {
     content: '';
@@ -78,7 +84,6 @@ import HeroCanvas from './HeroCanvas';
     pointer-events: none;
     z-index: 0;
   }
-
   .hero::after {
     content: '';
     position: absolute;
@@ -87,7 +92,6 @@ import HeroCanvas from './HeroCanvas';
     pointer-events: none;
     z-index: 1;
   }
-
   /* WebGL canvas wrapper */
   .hero__canvas-wrap {
     position: absolute;
@@ -95,7 +99,6 @@ import HeroCanvas from './HeroCanvas';
     z-index: 1;
     pointer-events: none;
   }
-
   .hero__inner {
     display: flex;
     flex-direction: column;
@@ -106,11 +109,9 @@ import HeroCanvas from './HeroCanvas';
     z-index: 2;
     min-height: calc(100svh - var(--nav-height));
   }
-
   .hero__content {
     max-width: 620px;
   }
-
   .hero__eyebrow {
     display: flex;
     align-items: center;
@@ -122,7 +123,6 @@ import HeroCanvas from './HeroCanvas';
     text-transform: uppercase;
     margin-bottom: var(--space-6);
   }
-
   .hero__eyebrow-dot {
     width: 6px;
     height: 6px;
@@ -130,12 +130,10 @@ import HeroCanvas from './HeroCanvas';
     border-radius: var(--radius-full);
     animation: pulse 2.5s ease-in-out infinite;
   }
-
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.5; transform: scale(0.85); }
   }
-
   .hero__headline {
     font-size: clamp(var(--text-3xl), 4vw, var(--text-5xl));
     font-weight: var(--weight-bold);
@@ -144,7 +142,6 @@ import HeroCanvas from './HeroCanvas';
     color: var(--color-text);
     margin-bottom: var(--space-6);
   }
-
   .hero__subheadline {
     font-size: clamp(var(--text-base), 1.5vw, var(--text-lg));
     line-height: var(--leading-relaxed);
@@ -152,32 +149,61 @@ import HeroCanvas from './HeroCanvas';
     margin-bottom: var(--space-10);
     max-width: 52ch;
   }
-
   .hero__ctas {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
     margin-bottom: var(--space-8);
   }
-
   .hero__meta {
     font-size: var(--text-sm);
     color: var(--color-text-muted);
     font-family: var(--font-mono);
   }
-
+  /* Scroll hint */
+  .hero__scroll-hint {
+    position: absolute;
+    bottom: var(--space-8);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--color-text-muted);
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    animation: bounce 2s ease-in-out infinite;
+    text-decoration: none;
+  }
+  .hero__scroll-hint:hover {
+    opacity: 1;
+  }
+  .hero__scroll-hint svg {
+    width: 24px;
+    height: 24px;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll-hint {
+      animation: none;
+    }
+  }
   /* Responsive */
   @media (max-width: 900px) {
     .hero__content {
       max-width: 100%;
     }
   }
-
   @media (max-width: 480px) {
     .hero__headline {
       font-size: var(--text-2xl);
     }
-
     .hero__ctas {
       flex-direction: column;
     }
