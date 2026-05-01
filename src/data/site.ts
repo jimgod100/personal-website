@@ -10,20 +10,24 @@ export const site = {
   hero: {
     headline: "Fintech Software Engineer transitioning toward CS/AI-focused global tech roles.",
     subheadline:
-      "I build reliable systems for complex business workflows — spanning backend services, distributed queues, database optimizations, and full-stack product features.",
-    primaryCta: { label: "View Projects", href: "#projects" },
-    secondaryCta: { label: "Download Resume", href: "/resume.pdf" },
-    meta: "Based in Taipei · Open to CS graduate programs and global software engineering opportunities",
+      "I build reliable systems for complex business workflows, with experience across backend services, databases, distributed queues, and full-stack product development.",
+    primaryCta: {
+      label: "View Projects",
+      href: "#projects",
+    },
+    secondaryCta: {
+      label: "Download Resume",
+      href: "/resume.pdf",
+    },
   },
   about: [
-    "I work on enterprise-grade financial systems at CTBC Bank, where I maintain and extend a full-stack SME loan origination platform handling application workflows, customer data verification, document generation, and multi-state business rules.",
-    "I am transitioning toward computer science and AI-oriented software engineering. My long-term goal is to join a top-tier global technology company and work on systems that scale across millions of users.",
-    "I care about understanding systems deeply — not just making things work, but understanding why they work, where they break, and how to make them better over time."
+    "I currently work at CTBC Bank on internal financial services systems — specifically an SME loan origination platform handling case creation, KYC/AML checks, credit scoring, and disbursement workflows across multiple integrated systems.",
+    "I work across backend services (C#, Java, Spring Boot, ASP.NET), relational databases (MSSQL, Oracle), async messaging (RabbitMQ), and frontend interfaces (Vue.js, Angular) — with deployments on Kubernetes and Azure.",
+    "I am moving toward computer science and AI-oriented software engineering, with long-term goals in global technology companies. I care about building reliable, scalable systems that solve real operational problems."
   ],
   goals: {
     headline: "Next Step",
     body:
-      "I am preparing for a CS or IT master's program abroad, focusing on computer science fundamentals, applied AI, and distributed systems. My goal is to bridge hands-on engineering experience with the rigorous foundations that global tech roles demand."
-  },
-  openTo: "Open to CS graduate programs, software engineering roles, and collaborations in fintech, platform engineering, and AI applications."
+      "I am preparing for graduate study in CS or AI, and seeking software engineering opportunities that deepen my foundations and expand my work into larger-scale distributed systems and AI-integrated products."
+  }
 };

@@ -1,56 +1,49 @@
 ---
 title: "SME Loan Origination Platform"
-tagline: "A full-stack enterprise system for end-to-end SME loan application processing at CTBC Bank."
-summary: "Maintained and extended a production-grade platform managing the full lifecycle of SME loan applications — from customer submission and verification through multi-step approvals, PDF contract generation, and downstream integration."
-role: "Software Engineer (Maintainer & Feature Developer)"
-timeline: "2024 — Present"
+tagline: "Full-stack digital lending workflow covering case creation, KYC/AML, credit scoring, and disbursement."
+tags: ["C#", "Java", "Spring Boot", "ASP.NET", "RabbitMQ", "MSSQL", "Oracle", "Vue.js", "Angular", "Kubernetes", "Azure"]
+period: "2024 — Present"
+role: "Software Engineer"
+company: "CTBC Bank"
 featured: true
-techStack:
-  - C#
-  - ASP.NET
-  - Java
-  - Vue.js
-  - Angular
-  - MSSQL
-  - Oracle
-  - RabbitMQ
-  - Kubernetes
-  - Azure
-order: 1
-githubUrl: "https://github.com/jimgod100/sme-loan-origination-platform"
 ---
 
 ## Problem
 
-Enterprise SME lending is operationally complex. Each loan application involves multi-party verification, regulatory compliance checks, dynamic business rules across dozens of product types, and tight SLAs on approval turnaround. The existing platform had accrued years of business logic spread across tightly coupled modules, making new feature development slow and regression-prone.
+SME (small and medium enterprise) lending at a large financial institution involves dozens of interdependent steps — document collection, identity verification, AML screening, credit bureau lookups, internal approval routing, and final disbursement — all subject to regulatory audit requirements. These processes were spread across legacy systems with inconsistent data flows and limited observability, making it difficult to track case state, diagnose failures, or onboard new business rules quickly.
 
 ## Goal
 
-My goal was twofold: stabilize the existing system by improving maintainability and test coverage, and extend it with new product features that could be delivered without destabilizing the core approval workflow engine.
+Build and maintain a unified loan origination platform that: centralizes the full lending lifecycle into a single auditable workflow system; integrates with external KYC/AML providers, credit scoring engines, and core banking systems; supports configurable approval routing; and provides reliable document generation for regulatory and customer-facing outputs.
 
 ## What I Built
 
-I maintained and extended the core loan origination modules — covering application ingestion, customer identity and credit verification, document generation, multi-step approval routing, and downstream disbursement handoffs. On the backend, I worked across C# (ASP.NET) services and Java microservices, both sharing Oracle and MSSQL databases with strict transactional guarantees.
+**Backend services** — Core workflow logic in C# (ASP.NET) and Java (Spring Boot), exposing REST APIs consumed by frontend interfaces and downstream integrators. Each major workflow phase (intake, KYC, credit assessment, approval, disbursement) is modeled as a discrete service with clear state transitions and rollback handling.
 
-I introduced a RabbitMQ-based event bus to decouple high-latency operations (e.g., external credit bureau calls, document rendering) from the main approval workflow. This made the system more resilient to third-party latency spikes and allowed retries without blocking approval state transitions.
+**Async event processing** — High-volume steps (AML batch checks, credit bureau callbacks, notification dispatch) are decoupled from the synchronous request path using RabbitMQ. This prevents timeout failures in upstream systems from blocking case progression and enables retry logic for transient failures.
 
-I built a PDF contract generation module that replaced a manual Word template process, using a templating engine to produce legally compliant documents dynamically based on loan product parameters. On the frontend, I implemented Vue.js and Angular components that surfaced workflow state clearly to loan officers and back-office operations staff.
+**Database layer** — Complex query optimization across MSSQL and Oracle for case search, audit log retrieval, and regulatory reporting. Introduced indexed views and query plan tuning to reduce P95 latency on report queries that aggregate across large case histories.
 
-The entire system runs on Kubernetes in Azure, with CI/CD pipelines handling staged rollouts across environments.
+**PDF document generation** — Dynamic generation of loan agreements, KYC summary reports, and approval notices by binding structured template definitions to real-time case data pulled from multiple upstream sources. Output must meet regulatory formatting requirements and be reproducible given the same case snapshot.
+
+**Frontend interfaces** — Workflow UIs in Vue.js and Angular for operations staff: case dashboards, document review queues, approval routing panels, and audit trail views. Worked closely with ops teams to translate compliance-driven business rules into practical interface flows.
+
+**Deployment & operations** — Containerized services running on Kubernetes (Azure). Participated in CI/CD pipeline maintenance, production deployments, and on-call incident response for workflow failures.
 
 ## Challenges
 
-The most significant challenge was understanding and safely modifying business rule logic that had no written documentation — the rules existed only in code and in the mental models of senior engineers. I built an internal mapping of the approval state machine before making any changes, which caught several edge cases before they reached staging.
+**State consistency across distributed steps.** When an external KYC check times out mid-workflow, the platform must resume correctly after retry without duplicating records or skipping audit events. Designing idempotent handlers and explicit state machine transitions (rather than implicit conditional logic) was key to making this reliable.
 
-The second challenge was the RabbitMQ integration: the existing services were not designed with idempotency in mind, so introducing a message queue required adding deduplication logic and designing the consumer handlers to be safe under at-least-once delivery semantics.
+**Regulatory auditability.** Every data mutation — who changed what, when, and why — must be queryable for compliance review. Implementing append-only audit logs with tamper-evident structure, without degrading write throughput on high-volume case tables, required careful schema design.
+
+**Legacy system integration.** Several upstream systems expose inconsistent or poorly documented APIs. Building thin adapter layers with explicit error mapping and circuit-breaker patterns kept the core workflow logic clean while absorbing upstream instability.
 
 ## Outcome
 
-- Approval workflow stability improved — fewer manual interventions required by operations staff
-- PDF generation time reduced from a multi-hour manual process to seconds per document
-- RabbitMQ integration decoupled credit verification calls from the synchronous approval path, improving responsiveness under load
-- New loan product types can now be onboarded through configuration changes rather than code changes in the rule engine
+- Unified a fragmented lending workflow into a single auditable platform, reducing case processing errors and improving ops-team visibility into case state.
+- Async decoupling via RabbitMQ eliminated a class of timeout-related case failures that had previously required manual intervention.
+- PDF generation pipeline handles all required regulatory document types with consistent formatting, reducing compliance review cycles.
 
 ## Reflection
 
-This project gave me deep exposure to the complexity of production financial systems — not just technically, but operationally. I learned how to reason about state machines in mission-critical workflows, how to introduce infrastructure changes (like a message broker) into a live system without a rewrite, and how to communicate technical tradeoffs to non-engineering stakeholders. It also clarified what I want next: roles where I can work on problems with greater algorithmic depth and at broader scale.
+This project gave me deep exposure to the complexity of building workflow-driven systems under real regulatory constraints — where correctness, auditability, and failure recovery matter more than raw throughput. It also reinforced the value of explicit state modeling and clean integration boundaries when coordinating across many external dependencies. The distributed systems and reliability patterns I applied here directly motivate my interest in graduate-level CS study focused on systems and AI infrastructure.
