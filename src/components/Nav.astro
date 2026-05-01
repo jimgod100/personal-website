@@ -62,8 +62,18 @@ import { site } from '../data/site';
 
 <script>
   // ---------- Theme Toggle ----------
+  // Fix: initialise from OS preference when no data-theme attribute is set
   const themeToggle = document.getElementById('theme-toggle') as HTMLButtonElement;
-  let currentTheme = document.documentElement.getAttribute('data-theme') ?? 'light';
+
+  function getInitialTheme(): string {
+    const stored = document.documentElement.getAttribute('data-theme');
+    if (stored === 'light' || stored === 'dark') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  let currentTheme = getInitialTheme();
+  // Sync the HTML attribute immediately so CSS [data-theme] selector works on first paint
+  document.documentElement.setAttribute('data-theme', currentTheme);
 
   function applyTheme(theme: string) {
     document.documentElement.setAttribute('data-theme', theme);

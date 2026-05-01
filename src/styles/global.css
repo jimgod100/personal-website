@@ -77,10 +77,10 @@ h6 {
   border-radius: var(--radius-sm);
 }
 
-/* Selection */
+/* Selection — use low-opacity accent so text remains readable in both modes */
 ::selection {
-  background: var(--color-accent);
-  color: var(--color-text-inverse);
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  color: var(--color-text);
 }
 
 /* Scrollbar — subtle */

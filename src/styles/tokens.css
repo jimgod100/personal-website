@@ -58,32 +58,6 @@
   --color-nav-border:   var(--color-neutral-200);
 
   /* ----------------------------------------------------------
-     Semantic Color Tokens — Dark Mode
-  ---------------------------------------------------------- */
-  [data-theme="dark"] {
-    --color-bg:           var(--color-neutral-950);
-    --color-bg-subtle:    var(--color-neutral-900);
-    --color-bg-muted:     var(--color-neutral-850);
-    --color-surface:      var(--color-neutral-900);
-    --color-surface-raised: var(--color-neutral-850);
-    --color-border:       var(--color-neutral-800);
-    --color-border-muted: var(--color-neutral-700);
-
-    --color-text:         var(--color-neutral-100);
-    --color-text-subtle:  var(--color-neutral-300);
-    --color-text-muted:   var(--color-neutral-500);
-    --color-text-inverse: var(--color-neutral-950);
-
-    --color-accent:       var(--color-teal-400);
-    --color-accent-hover: var(--color-teal-300);
-    --color-accent-subtle: var(--color-teal-900);
-    --color-accent-text:  var(--color-teal-300);
-
-    --color-nav-bg:       rgba(15, 17, 19, 0.9);
-    --color-nav-border:   var(--color-neutral-800);
-  }
-
-  /* ----------------------------------------------------------
      Typography
   ---------------------------------------------------------- */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -149,19 +123,12 @@
   --radius-full: 9999px;
 
   /* ----------------------------------------------------------
-     Shadows
+     Shadows — Light Mode
   ---------------------------------------------------------- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:   0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.12);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
-
-  [data-theme="dark"] {
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
-  }
 
   /* ----------------------------------------------------------
      Transitions
@@ -169,4 +136,37 @@
   --transition-fast: 120ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 350ms ease;
+}
+
+/* ----------------------------------------------------------
+   Dark Mode — top-level selector (not nested in :root)
+   Fixes CSS nesting specificity bug where [data-theme="dark"]
+   inside :root failed to override the light-mode token values.
+---------------------------------------------------------- */
+[data-theme="dark"] {
+  --color-bg:           var(--color-neutral-950);
+  --color-bg-subtle:    var(--color-neutral-900);
+  --color-bg-muted:     var(--color-neutral-850);
+  --color-surface:      var(--color-neutral-900);
+  --color-surface-raised: var(--color-neutral-850);
+  --color-border:       var(--color-neutral-800);
+  --color-border-muted: var(--color-neutral-700);
+
+  --color-text:         var(--color-neutral-100);
+  --color-text-subtle:  var(--color-neutral-300);
+  --color-text-muted:   var(--color-neutral-500);
+  --color-text-inverse: var(--color-neutral-950);
+
+  --color-accent:       var(--color-teal-400);
+  --color-accent-hover: var(--color-teal-300);
+  --color-accent-subtle: var(--color-teal-900);
+  --color-accent-text:  var(--color-teal-300);
+
+  --color-nav-bg:       rgba(15, 17, 19, 0.9);
+  --color-nav-border:   var(--color-neutral-800);
+
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:   0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
