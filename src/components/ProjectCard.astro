@@ -13,7 +13,7 @@ interface Props {
 const { title, tagline, summary, techStack, slug, githubUrl, timeline, role } = Astro.props;
 ---
 
-<article class="project-card">
+<article class="project-card" data-motion="fade-up">
   <div class="project-card__body">
     <div class="project-card__header">
       <div class="project-card__meta">
@@ -213,6 +213,10 @@ const { title, tagline, summary, techStack, slug, githubUrl, timeline, role } = 
     background: var(--color-accent-subtle);
   }
 
+  .project-card__action--primary:hover .project-card__action-arrow {
+    transform: translateX(3px);
+  }
+
   .project-card__action-icon {
     width: 14px;
     height: 14px;
@@ -221,5 +225,6 @@ const { title, tagline, summary, techStack, slug, githubUrl, timeline, role } = 
   .project-card__action-arrow {
     width: 14px;
     height: 14px;
+    transition: transform var(--transition-base);
   }
 </style>

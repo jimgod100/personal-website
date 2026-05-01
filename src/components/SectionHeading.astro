@@ -2,12 +2,13 @@
 interface Props {
   label: string;
   id?: string;
+  [key: string]: any;
 }
 
-const { label, id } = Astro.props;
+const { label, id, ...rest } = Astro.props;
 ---
 
-<div class="section-heading" {id}>
+<div class="section-heading" id={id} {...rest}>
   <span class="section-heading__label" aria-hidden="true">{label}</span>
   <slot />
 </div>

@@ -5,24 +5,25 @@ import SectionHeading from './SectionHeading.astro';
 
 <section class="contact section" id="contact" aria-label="Contact">
   <div class="container">
-    <SectionHeading label="Contact">
+    <SectionHeading label="Contact" data-motion="fade-up">
       <h2 class="section-title">Get in touch</h2>
     </SectionHeading>
 
     <div class="contact__inner">
-      <div class="contact__intro">
+      <div class="contact__intro" data-motion="fade-up">
         <p class="contact__lead">
           I'm always happy to connect — whether it's about a role, a project, or just a good conversation about systems and engineering.
         </p>
         <p class="contact__open-to">{site.openTo}</p>
       </div>
 
-      <div class="contact__links">
+      <div class="contact__links" data-motion-stagger-group="contact-links">
         <a
           href={`mailto:${site.email}`}
           class="contact__link"
           id="contact-email"
           aria-label="Send email"
+          data-motion="fade-up"
         >
           <div class="contact__link-icon-wrap" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="contact__link-icon">
@@ -46,6 +47,7 @@ import SectionHeading from './SectionHeading.astro';
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub profile"
+          data-motion="fade-up"
         >
           <div class="contact__link-icon-wrap" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="contact__link-icon">
@@ -68,6 +70,7 @@ import SectionHeading from './SectionHeading.astro';
           target="_blank"
           rel="noopener noreferrer"
           aria-label="LinkedIn profile"
+          data-motion="fade-up"
         >
           <div class="contact__link-icon-wrap" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="contact__link-icon">

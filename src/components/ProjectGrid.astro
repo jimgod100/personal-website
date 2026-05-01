@@ -11,11 +11,11 @@ const featuredProjects = allProjects
 
 <section class="projects section" id="projects" aria-label="Projects">
   <div class="container">
-    <SectionHeading label="Projects">
+    <SectionHeading label="Projects" data-motion="fade-up">
       <h2 class="section-title">Selected work</h2>
     </SectionHeading>
 
-    <div class="projects__grid">
+    <div class="projects__grid" data-motion-stagger-group="projects">
       {featuredProjects.map((project) => (
         <ProjectCard
           title={project.data.title}

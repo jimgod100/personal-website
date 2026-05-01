@@ -5,13 +5,13 @@ import SectionHeading from './SectionHeading.astro';
 
 <section class="experience section" id="experience" aria-label="Experience">
   <div class="container">
-    <SectionHeading label="Experience">
+    <SectionHeading label="Experience" data-motion="fade-up">
       <h2 class="section-title">Where I've worked</h2>
     </SectionHeading>
 
-    <div class="experience__list">
+    <div class="experience__list" data-motion-stagger-group="experience">
       {experience.map((job) => (
-        <article class="experience__item">
+        <article class="experience__item" data-motion="fade-up">
           <div class="experience__header">
             <div class="experience__title-group">
               <h3 class="experience__role">{job.role}</h3>

@@ -1,7 +1,11 @@
 /**
- * scroll-animations.ts
- * GSAP ScrollTrigger reveal animations for all sections.
+ * scrollReveal.ts
+ * Unified GSAP ScrollTrigger reveal animations using data attributes.
  * Loaded once in Layout.astro. Respects prefers-reduced-motion.
+ *
+ * API:
+ * data-motion="fade-up" | "fade-in" | "blur-in" | "scale-up"
+ * data-motion-stagger-group="groupName" (optional, groups elements for staggering)
  */
 
 import { gsap } from 'gsap';
@@ -9,264 +13,94 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-function initScrollAnimations() {
+function initScrollReveal() {
   const prefersReducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
   ).matches;
 
   if (prefersReducedMotion) {
-    // Make everything visible immediately — no animation
-    gsap.set(
-      [
-        '.about__paragraph',
-        '.experience__card',
-        '.project-card',
-        '.skill-group',
-        '.edu-goals__card',
-        '.edu-goals__focus-areas',
-        '.edu-goals__open-to',
-        '.contact__lead',
-        '.contact__link',
-      ],
-      { opacity: 1, y: 0, filter: 'none' }
-    );
+    // Make everything visible immediately
+    document.querySelectorAll<HTMLElement>('[data-motion]').forEach((el) => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      el.style.filter = 'none';
+    });
     return;
   }
 
-  // --- Section heading reveal (all sections) ---
-  gsap.utils.toArray<HTMLElement>('.section-heading').forEach((el) => {
-    gsap.from(el, {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 88%',
-        once: true,
-      },
-    });
+  // Set initial state for all items to prevent FOUC (opacity 0)
+  gsap.set('[data-motion]', { opacity: 0 });
+
+  // 1. Process individual elements (no stagger group)
+  const singleElements = document.querySelectorAll<HTMLElement>('[data-motion]:not([data-motion-stagger-group])');
+  singleElements.forEach((el) => {
+    const motion = el.getAttribute('data-motion');
+    let fromVars: gsap.TweenVars = { opacity: 0 };
+    
+    if (motion === 'fade-up') fromVars = { opacity: 0, y: 30 };
+    else if (motion === 'fade-in') fromVars = { opacity: 0 };
+    else if (motion === 'blur-in') fromVars = { opacity: 0, filter: 'blur(8px)', y: 20 };
+    else if (motion === 'scale-up') fromVars = { opacity: 0, scale: 0.95, y: 20 };
+
+    gsap.fromTo(el, 
+      fromVars,
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          once: true,
+        }
+      }
+    );
   });
 
-  // --- About paragraphs: staggered fade-in-up ---
-  const aboutParagraphs = gsap.utils.toArray<HTMLElement>('.about__paragraph');
-  if (aboutParagraphs.length > 0) {
-    gsap.from(aboutParagraphs, {
-      opacity: 0,
-      y: 30,
-      duration: 0.7,
-      stagger: 0.12,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.about__text',
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
+  // 2. Process staggered groups
+  const staggerGroups = new Set<string>();
+  document.querySelectorAll<HTMLElement>('[data-motion-stagger-group]').forEach(el => {
+    const groupName = el.getAttribute('data-motion-stagger-group');
+    if (groupName) staggerGroups.add(groupName);
+  });
 
-  // --- About sidebar card ---
-  const aboutCard = document.querySelector('.about__card');
-  if (aboutCard) {
-    gsap.from(aboutCard, {
-      opacity: 0,
-      y: 25,
-      duration: 0.7,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: aboutCard,
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
+  staggerGroups.forEach(groupName => {
+    const elements = document.querySelectorAll<HTMLElement>(`[data-motion-stagger-group="${groupName}"]`);
+    if (elements.length === 0) return;
+    
+    const motion = elements[0].getAttribute('data-motion');
+    let fromVars: gsap.TweenVars = { opacity: 0 };
+    
+    if (motion === 'fade-up') fromVars = { opacity: 0, y: 30 };
+    else if (motion === 'fade-in') fromVars = { opacity: 0 };
+    else if (motion === 'scale-up') fromVars = { opacity: 0, y: 40, scale: 0.97 };
+    else if (motion === 'blur-in') fromVars = { opacity: 0, filter: 'blur(4px)', y: 20 };
 
-  // --- Experience card ---
-  const experienceCards = gsap.utils.toArray<HTMLElement>('.experience__card');
-  if (experienceCards.length > 0) {
-    gsap.from(experienceCards, {
-      opacity: 0,
-      y: 35,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: experienceCards[0],
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  // --- Project cards: staggered reveal ---
-  const projectCards = gsap.utils.toArray<HTMLElement>('.project-card');
-  if (projectCards.length > 0) {
-    gsap.from(projectCards, {
-      opacity: 0,
-      y: 40,
-      scale: 0.97,
-      duration: 0.7,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.projects__grid',
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  // --- Skills groups: blur-to-sharp float-in ---
-  const skillGroups = gsap.utils.toArray<HTMLElement>('.skill-group');
-  if (skillGroups.length > 0) {
-    gsap.from(skillGroups, {
-      opacity: 0,
-      y: 20,
-      filter: 'blur(4px)',
-      duration: 0.6,
-      stagger: 0.08,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.skills__grid',
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  // --- Education/Goals card ---
-  const eduCard = document.querySelector('.edu-goals__card');
-  if (eduCard) {
-    gsap.from(eduCard, {
-      opacity: 0,
-      y: 30,
-      duration: 0.7,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: eduCard,
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  const eduFocus = document.querySelector('.edu-goals__focus-areas');
-  if (eduFocus) {
-    gsap.from(eduFocus, {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      delay: 0.15,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: eduFocus,
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  const eduSidebar = document.querySelector('.edu-goals__open-to');
-  if (eduSidebar) {
-    gsap.from(eduSidebar, {
-      opacity: 0,
-      y: 25,
-      duration: 0.6,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: eduSidebar,
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  // --- Contact links: staggered ---
-  const contactLinks = gsap.utils.toArray<HTMLElement>('.contact__link');
-  if (contactLinks.length > 0) {
-    gsap.from(contactLinks, {
-      opacity: 0,
-      x: -20,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.contact__links',
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  const contactLead = document.querySelector('.contact__lead');
-  if (contactLead) {
-    gsap.from(contactLead, {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: contactLead,
-        start: 'top 85%',
-        once: true,
-      },
-    });
-  }
-
-  // --- Hero text: entrance animation (not scroll-triggered, plays on load) ---
-  const heroTimeline = gsap.timeline({ delay: 0.2 });
-
-  heroTimeline
-    .from('.hero__eyebrow', {
-      opacity: 0,
-      y: 15,
-      duration: 0.5,
-      ease: 'power2.out',
-    })
-    .from(
-      '.hero__headline',
+    gsap.fromTo(elements, 
+      fromVars,
       {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 0.7,
+        stagger: 0.1,
         ease: 'power2.out',
-      },
-      '-=0.3'
-    )
-    .from(
-      '.hero__subheadline',
-      {
-        opacity: 0,
-        y: 15,
-        duration: 0.5,
-        ease: 'power2.out',
-      },
-      '-=0.3'
-    )
-    .from(
-      '.hero__ctas',
-      {
-        opacity: 0,
-        y: 15,
-        duration: 0.5,
-        ease: 'power2.out',
-      },
-      '-=0.2'
-    )
-    .from(
-      '.hero__meta',
-      {
-        opacity: 0,
-        duration: 0.4,
-        ease: 'power2.out',
-      },
-      '-=0.2'
+        scrollTrigger: {
+          trigger: elements[0],
+          start: 'top 85%',
+          once: true,
+        }
+      }
     );
+  });
 }
 
-// Run after DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initScrollAnimations);
+  document.addEventListener('DOMContentLoaded', initScrollReveal);
 } else {
-  initScrollAnimations();
+  initScrollReveal();
 }

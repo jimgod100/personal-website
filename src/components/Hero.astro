@@ -11,17 +11,17 @@ import HeroCanvas from './HeroCanvas';
 
   <div class="container hero__inner">
     <!-- Text Side -->
-    <div class="hero__content">
-      <p class="hero__eyebrow">
+    <div class="hero__content" data-motion-stagger-group="hero">
+      <p class="hero__eyebrow" data-motion="fade-up">
         <span class="hero__eyebrow-dot" aria-hidden="true"></span>
         {site.location}
       </p>
 
-      <h1 class="hero__headline">{site.hero.headline}</h1>
+      <h1 class="hero__headline" data-motion="fade-up">{site.hero.headline}</h1>
 
-      <p class="hero__subheadline">{site.hero.subheadline}</p>
+      <p class="hero__subheadline" data-motion="fade-up">{site.hero.subheadline}</p>
 
-      <div class="hero__ctas">
+      <div class="hero__ctas" data-motion="fade-up">
         <a
           href={site.hero.primaryCta.href}
           class="btn btn--primary"
@@ -48,7 +48,7 @@ import HeroCanvas from './HeroCanvas';
       </div>
 
       {(site.hero as any).meta && (
-        <p class="hero__meta">{(site.hero as any).meta}</p>
+        <p class="hero__meta" data-motion="fade-up">{(site.hero as any).meta}</p>
       )}
     </div>
   </div>

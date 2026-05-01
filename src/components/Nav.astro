@@ -118,14 +118,16 @@ import { site } from '../data/site';
     right: 0;
     z-index: 100;
     height: var(--nav-height);
-    background: var(--color-nav-bg);
+    background: transparent;
     border-bottom: 1px solid transparent;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    transition: all var(--transition-base);
   }
 
   .nav--scrolled {
+    height: 60px;
+    background: var(--color-nav-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom-color: var(--color-nav-border);
     box-shadow: var(--shadow-sm);
   }
@@ -146,7 +148,11 @@ import { site } from '../data/site';
     font-size: var(--text-lg);
     color: var(--color-text);
     letter-spacing: var(--tracking-tight);
-    transition: color var(--transition-fast);
+    transition: all var(--transition-base);
+  }
+
+  .nav--scrolled .nav__logo {
+    font-size: var(--text-base);
   }
 
   .nav__logo:hover {

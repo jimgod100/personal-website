@@ -5,20 +5,20 @@ import SectionHeading from './SectionHeading.astro';
 
 <section class="about section" id="about" aria-label="About">
   <div class="container about__inner">
-    <SectionHeading label="About">
+    <SectionHeading label="About" data-motion="fade-up">
       <h2 class="section-title">A bit about me</h2>
     </SectionHeading>
 
     <div class="about__content">
-      <div class="about__text">
+      <div class="about__text" data-motion-stagger-group="about-text">
         {site.about.map((paragraph, i) => (
-          <p class={`about__paragraph ${i === 0 ? 'about__paragraph--lead' : ''}`}>
+          <p class={`about__paragraph ${i === 0 ? 'about__paragraph--lead' : ''}`} data-motion="fade-up">
             {paragraph}
           </p>
         ))}
       </div>
 
-      <aside class="about__sidebar">
+      <aside class="about__sidebar" data-motion="fade-up">
         <div class="about__card">
           <div class="about__card-row">
             <span class="about__card-label">Location</span>
