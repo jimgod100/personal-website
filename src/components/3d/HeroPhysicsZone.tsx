@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier';
 import { useFrame } from '@react-three/fiber';
+import { Text3D, Center } from '@react-three/drei';
 import vertexShader from './shaders/heroCross.vert.glsl';
 import fragmentShader from './shaders/heroCross.frag.glsl';
 
@@ -101,6 +102,33 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: string }) {
           </RigidBody>
         );
       })}
+
+      {/* Floating 3D Text from lusion-reverse-engineered-main */}
+      <RigidBody 
+        type="dynamic" 
+        colliders="cuboid" 
+        position={[0, 5, 0]}
+        restitution={0.6}
+        friction={0.2}
+      >
+        <Center>
+          <Text3D
+            font="/fonts/optimer_regular.typeface.json"
+            size={1.5}
+            height={0.4}
+            curveSegments={12}
+            bevelEnabled
+            bevelThickness={0.1}
+            bevelSize={0.05}
+            bevelOffset={0}
+            bevelSegments={5}
+          >
+            LUSION
+            <meshStandardMaterial color={baseColor} roughness={0.1} metalness={0.6} />
+          </Text3D>
+        </Center>
+      </RigidBody>
+
     </Physics>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 
 /**
@@ -10,8 +11,13 @@ import * as THREE from 'three';
 export default function DOMSyncZone({ color }: { color: React.MutableRefObject<string> }) {
   const { size, camera } = useThree();
   const [elements, setElements] = useState<HTMLElement[]>([]);
-  const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const groupRefs = useRef<(THREE.Group | null)[]>([]);
   const hoverStates = useRef<boolean[]>([]);
+  const mixers = useRef<THREE.AnimationMixer[]>([]);
+
+  // Load Lusion GLTF models
+  const { scene: panelModel, animations: panelAnims } = useGLTF('/models/panel-anim-bones-02.glb');
+  const { scene: femaleModel, animations: femaleAnims } = useGLTF('/models/female.glb');
   
   // Find all elements to sync on mount and after a short delay (in case Astro renders them late)
   useEffect(() => {
@@ -32,8 +38,12 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
       });
 
       setElements(els);
-      meshRefs.current = els.map(() => null);
+      groupRefs.current = els.map(() => null);
       hoverStates.current = els.map(() => false);
+      
+      // Cleanup old mixers
+      mixers.current = [];
+      
       currentEls = els;
 
       // Add new listeners
@@ -58,10 +68,13 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
     };
   }, []);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
+    // Update animations
+    mixers.current.forEach(mixer => mixer.update(delta));
+
     elements.forEach((el, index) => {
-      const mesh = meshRefs.current[index];
-      if (!mesh) return;
+      const group = groupRefs.current[index];
+      if (!group) return;
 
       const rect = el.getBoundingClientRect();
       
@@ -85,23 +98,35 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
       const pos = camera.position.clone().add(dir.multiplyScalar(distance));
 
       // Smooth interpolation for silky movement
-      mesh.position.lerp(pos, 0.1);
+      group.position.lerp(pos, 0.1);
       
       const isHovered = hoverStates.current[index];
 
       // Scale based on distance or rect size so it roughly matches the card size
-      const targetScale = isHovered ? 1.5 : 1.0;
-      mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+      const baseScale = index % 2 === 0 ? 0.5 : 2.0; // Female model is large, panel is small
+      const targetScale = isHovered ? baseScale * 1.5 : baseScale;
+      group.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
 
       // We'll give it a gentle constant rotation, faster when hovered
       const rotSpeed = isHovered ? 0.05 : 0.01;
-      mesh.rotation.x += rotSpeed;
-      mesh.rotation.y += rotSpeed * 1.5;
+      group.rotation.x += rotSpeed;
+      group.rotation.y += rotSpeed * 1.5;
 
-      // Pulse color
+      // Pulse color on children
       const col = new THREE.Color(color.current);
-      (mesh.material as THREE.MeshStandardMaterial).color.copy(col);
-      (mesh.material as THREE.MeshStandardMaterial).emissive.copy(col);
+      group.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const m = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
+          if (m) {
+            m.color?.copy(col);
+            m.emissive?.copy(col);
+            m.emissiveIntensity = 0.5;
+            m.transparent = true;
+            m.opacity = 0.8;
+            m.wireframe = true;
+          }
+        }
+      });
     });
   });
 
@@ -109,20 +134,33 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
 
   return (
     <group>
-      {elements.map((_, i) => (
-        <mesh key={i} ref={(el) => (meshRefs.current[i] = el)}>
-          {/* A cool geometric shape behind each project card */}
-          <icosahedronGeometry args={[1, 1]} />
-          <meshStandardMaterial 
-            roughness={0.2}
-            metalness={0.8}
-            wireframe={true}
-            transparent
-            opacity={0.3}
-            emissiveIntensity={0.5}
-          />
-        </mesh>
-      ))}
+      {elements.map((_, i) => {
+        // Alternate models for variety
+        const isPanel = i % 2 === 0;
+        const clonedScene = (isPanel ? panelModel : femaleModel).clone();
+        const anims = isPanel ? panelAnims : femaleAnims;
+
+        return (
+          <group 
+            key={i} 
+            ref={(el) => {
+              groupRefs.current[i] = el;
+              if (el && anims.length > 0 && !mixers.current[i]) {
+                const mixer = new THREE.AnimationMixer(el);
+                const action = mixer.clipAction(anims[0]);
+                action.play();
+                mixers.current[i] = mixer;
+              }
+            }}
+          >
+            <primitive object={clonedScene} />
+          </group>
+        );
+      })}
     </group>
   );
 }
+
+// Preload to avoid jitter
+useGLTF.preload('/models/panel-anim-bones-02.glb');
+useGLTF.preload('/models/female.glb');
