@@ -19,7 +19,7 @@ import SectionHeading from './SectionHeading.astro';
       </div>
 
       <aside class="about__sidebar" data-motion="fade-up">
-        <div class="about__card">
+        <div class="about__card" data-webgl-sync="about">
           <div class="about__card-row">
             <span class="about__card-label">Location</span>
             <span class="about__card-value">{site.location}</span>
@@ -103,7 +103,8 @@ import SectionHeading from './SectionHeading.astro';
 
   /* Sidebar card */
   .about__card {
-    background: var(--color-surface);
+    background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--space-6);

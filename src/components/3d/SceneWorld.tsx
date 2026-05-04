@@ -15,6 +15,7 @@ import ParticleField from './ParticleField';
 import WireframeZone from './WireframeZone';
 import HeroPhysicsZone from './HeroPhysicsZone';
 import ScrollTube from './ScrollTube';
+import DOMSyncZone from './DOMSyncZone';
 import { useCameraScroll } from './useCameraScroll';
 import { useCameraIntro } from './useCameraIntro';
 
@@ -106,6 +107,9 @@ export default function SceneWorld() {
 
       {/* Physics Stacking Crosses */}
       <HeroPhysicsZone baseColor={accentColor} />
+
+      {/* DOM-to-WebGL Sync Zone for Project Cards */}
+      <DOMSyncZone color={accentColor} />
 
       {/* Dynamic Scroll Tube */}
       <ScrollTube color={accentColor} velocityData={velocityData} />
