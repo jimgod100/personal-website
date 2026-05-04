@@ -93,22 +93,88 @@ import { site } from '../data/site';
 </style>
 
 <script>
-  // Intersection Observer for lightweight scroll reveals
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-revealed');
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.3 }
-  );
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-  document.querySelectorAll('[data-motion]').forEach((el) => {
-    observer.observe(el);
-  });
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Advanced Lusion-style GSAP Scroll Reveals
+  function initScrollReveals() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      document.querySelectorAll('[data-motion]').forEach((el) => {
+        el.classList.add('is-revealed');
+      });
+      return;
+    }
+
+    // 1. Text fades & slight upward movement
+    const textElements = document.querySelectorAll('p[data-motion], h2[data-motion], h3[data-motion], span[data-motion]');
+    textElements.forEach((el) => {
+      gsap.fromTo(el, 
+        { autoAlpha: 0, y: 40, rotationX: -15, transformPerspective: 500 },
+        { 
+          autoAlpha: 1, y: 0, rotationX: 0,
+          duration: 1.2, 
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+
+    // 2. Cards Staggered Animation
+    // Group cards by their parent container to stagger them beautifully
+    const cardContainers = document.querySelectorAll('.project-grid, .about__content, .experience__list');
+    cardContainers.forEach((container) => {
+      const cards = container.querySelectorAll('.project-card, .about__card, .experience__item');
+      if (cards.length > 0) {
+        gsap.fromTo(cards,
+          { autoAlpha: 0, y: 60, scale: 0.95 },
+          {
+            autoAlpha: 1, y: 0, scale: 1,
+            duration: 1.2,
+            stagger: 0.15,
+            ease: 'back.out(1.2)', // bouncy Lusion feel
+            scrollTrigger: {
+              trigger: container,
+              start: 'top 80%',
+              toggleActions: 'play none none reverse'
+            }
+          }
+        );
+      }
+    });
+
+    // 3. Any other data-motion elements
+    const otherElements = document.querySelectorAll('[data-motion]:not(p):not(h2):not(h3):not(span)');
+    otherElements.forEach((el) => {
+      if (el.closest('.project-grid') || el.closest('.about__content') || el.closest('.experience__list')) return; // handled by stagger
+      
+      gsap.fromTo(el,
+        { autoAlpha: 0, y: 30 },
+        {
+          autoAlpha: 1, y: 0,
+          duration: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initScrollReveals);
+  } else {
+    initScrollReveals();
+  }
 
   // Parallax effect for HTML sections
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
