@@ -22,6 +22,7 @@ import { site } from '../data/site';
           href={site.hero.primaryCta.href}
           class="btn btn--primary"
           id="hero-cta-primary"
+          data-magnetic
         >
           {site.hero.primaryCta.label}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="btn__icon" aria-hidden="true">
@@ -34,6 +35,7 @@ import { site } from '../data/site';
           id="hero-cta-resume"
           target="_blank"
           rel="noopener noreferrer"
+          data-magnetic
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="btn__icon btn__icon--left" aria-hidden="true">
             <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
@@ -50,7 +52,7 @@ import { site } from '../data/site';
   </div>
 
   <!-- Scroll hint -->
-  <a href="#projects" class="hero__scroll-hint" aria-label="Scroll down">
+  <a href="#projects" class="hero__scroll-hint" aria-label="Scroll down" data-magnetic>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9" />
     </svg>

@@ -5,16 +5,16 @@ import { site } from '../data/site';
 <header class="nav" id="nav" role="banner">
   <div class="nav__inner container">
     <!-- Logo / Name -->
-    <a href="/" class="nav__logo" aria-label="Home">
+    <a href="/" class="nav__logo" aria-label="Home" data-magnetic>
       <span class="nav__logo-name">{site.name}</span>
       <span class="nav__logo-dot" aria-hidden="true">.</span>
     </a>
 
     <!-- Desktop links -->
     <nav class="nav__links" aria-label="Primary navigation">
-      <a href="#projects" class="nav__link">Projects</a>
-      <a href="#about" class="nav__link">About</a>
-      <a href="#contact" class="nav__link">Contact</a>
+      <a href="#projects" class="nav__link" data-magnetic>Projects</a>
+      <a href="#about" class="nav__link" data-magnetic>About</a>
+      <a href="#contact" class="nav__link" data-magnetic>Contact</a>
     </nav>
 
     <div class="nav__actions">
@@ -24,6 +24,7 @@ import { site } from '../data/site';
         class="theme-toggle"
         aria-label="Toggle dark mode"
         type="button"
+        data-magnetic
       >
         <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4"></circle>
