@@ -28,7 +28,7 @@ function getThemeColors() {
 
 export default function SceneWorld() {
   const { scene, camera } = useThree();
-  const scrollData    = useCameraScroll();   // MutableRefObject<TimelineState>
+  const { scrollData, velocityData } = useCameraScroll();
   const introFinished = useCameraIntro();    // MutableRefObject<boolean>
 
   const accentColor = useRef(getThemeColors().accent);
@@ -108,7 +108,7 @@ export default function SceneWorld() {
       <HeroPhysicsZone baseColor={accentColor} />
 
       {/* Dynamic Scroll Tube */}
-      <ScrollTube color={accentColor} />
+      <ScrollTube color={accentColor} velocityData={velocityData} />
     </>
   );
 }

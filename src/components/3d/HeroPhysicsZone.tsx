@@ -1,23 +1,42 @@
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier';
+import { useFrame } from '@react-three/fiber';
+import vertexShader from './shaders/heroCross.vert.glsl';
+import fragmentShader from './shaders/heroCross.frag.glsl';
 
-const CrossGeometry = ({ color }: { color: string }) => (
-  <group>
-    <mesh castShadow receiveShadow>
-      <boxGeometry args={[1, 0.2, 0.2]} />
-      <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
-    </mesh>
-    <mesh castShadow receiveShadow>
-      <boxGeometry args={[0.2, 1, 0.2]} />
-      <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
-    </mesh>
-    <mesh castShadow receiveShadow>
-      <boxGeometry args={[0.2, 0.2, 1]} />
-      <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
-    </mesh>
-  </group>
-);
+const CrossGeometry = ({ color }: { color: string }) => {
+  const materialRef = React.useRef<THREE.ShaderMaterial>(null);
+
+  useFrame((state) => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+      materialRef.current.uniforms.uColor.value.set(color);
+    }
+  });
+
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color(color) }
+  }), []);
+
+  return (
+    <group>
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[1, 0.2, 0.2]} />
+        <shaderMaterial ref={materialRef} vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
+      </mesh>
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[0.2, 1, 0.2]} />
+        <shaderMaterial vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
+      </mesh>
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[0.2, 0.2, 1]} />
+        <shaderMaterial vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
+      </mesh>
+    </group>
+  );
+};
 
 export default function HeroPhysicsZone({ baseColor }: { baseColor: string }) {
   const crosses = useMemo(() => {
@@ -54,20 +73,34 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: string }) {
         <CuboidCollider args={[10, 20, 1]} />
       </RigidBody>
 
-      {crosses.map((props, i) => (
-        <RigidBody 
-          key={i} 
-          colliders="hull" 
-          position={props.position} 
-          rotation={props.rotation} 
-          restitution={0.5} 
-          friction={0.5}
-        >
+      {crosses.map((props, i) => {
+        const rbRef = React.useRef<any>(null);
+
+        const handlePointerEnter = () => {
+          if (rbRef.current) {
+            rbRef.current.applyImpulse({ x: (Math.random() - 0.5) * 2, y: 5, z: (Math.random() - 0.5) * 2 }, true);
+            rbRef.current.applyTorqueImpulse({ x: Math.random() * 2, y: Math.random() * 2, z: Math.random() * 2 }, true);
+          }
+        };
+
+        return (
+          <RigidBody 
+            key={i} 
+            ref={rbRef}
+            colliders="hull" 
+            position={props.position} 
+            rotation={props.rotation} 
+            restitution={0.5} 
+            friction={0.5}
+            onPointerEnter={handlePointerEnter}
+            onClick={handlePointerEnter}
+          >
           <group scale={props.scale}>
             <CrossGeometry color={baseColor} />
           </group>
-        </RigidBody>
-      ))}
+          </RigidBody>
+        );
+      })}
     </Physics>
   );
 }
