@@ -97,22 +97,32 @@ export default function SceneWorld() {
     return () => window.removeEventListener('mousemove', onMouseMove);
   }, []);
 
-  // ── Per-frame: fog density + camera ─────────────────────────────────────
-  useFrame(() => {
-    const sd = scrollData.current;
+  const lerpedProgress = useRef(0);
 
-    // Update fog density from scroll timeline
+  // ── Per-frame: fog density + camera ─────────────────────────────────────
+  useFrame((state, delta) => {
+    // Smoothing scroll progress for better "experience" (體感)
+    lerpedProgress.current = THREE.MathUtils.lerp(
+      lerpedProgress.current,
+      scrollProgressRef.current,
+      delta * 4 // Smoothing factor
+    );
+    
+    // Update timeline state with smoothed progress
+    const sd = interpolateTimeline(lerpedProgress.current);
+    
+    // Update fog density
     if (scene.fog instanceof THREE.FogExp2) {
       scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, sd.fogDensity, 0.05);
     }
 
-    // Camera is owned by GSAP until intro finishes
+    // Camera intro check
     if (!introFinished.current) return;
 
-    // Scroll-driven Z + Y
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, sd.cameraZ, 0.08);
-    const breathY = Math.sin(Date.now() * 0.001) * 0.1;
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, sd.cameraY + breathY, 0.08);
+    // Apply smoothed camera movement
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, sd.cameraZ, 0.1);
+    const breathY = Math.sin(state.clock.elapsedTime * 0.8) * 0.15;
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, sd.cameraY + breathY, 0.1);
 
     // Mouse parallax fades as camera moves deep into scene
     const parallaxFactor = Math.max(0, 1 - sd.cameraZ / 20);

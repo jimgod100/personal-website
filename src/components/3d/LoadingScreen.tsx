@@ -47,7 +47,7 @@ export default function LoadingScreen({ onComplete }: Props) {
       if (loadingTarget.current < 1) {
         loadingTarget.current = 1;
       }
-    }, 2500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -64,15 +64,15 @@ export default function LoadingScreen({ onComplete }: Props) {
     uniforms.loadingProgress.value = THREE.MathUtils.lerp(
       uniforms.loadingProgress.value,
       loadingTarget.current,
-      delta * 10
+      delta * 12
     );
-    uniforms.loadingProgress.value = Math.min(uniforms.loadingProgress.value + 0.0000001, 1);
+    uniforms.loadingProgress.value = Math.min(uniforms.loadingProgress.value + 0.000001, 1);
 
     // Post-load sequence
     if (uniforms.loadingProgress.value >= 0.999) {
       uniforms.loadingProgress.value = 1;
       uniforms.postLoadSequenceProgress.value = Math.min(
-        uniforms.postLoadSequenceProgress.value + delta * 0.6,
+        uniforms.postLoadSequenceProgress.value + delta * 1.5,
         1
       );
 
