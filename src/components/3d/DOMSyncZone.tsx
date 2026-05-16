@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
+import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 /**
  * DOMSyncZone mimics Lusion's WebGL-Scroll-Sync.
- * It finds all DOM elements with `data-webgl-sync` and tracks their screen coordinates,
+ * It finds all DOM elements with `data-dom-sync` and tracks their screen coordinates,
  * projecting them into the 3D scene so that a 3D object is always perfectly aligned behind the DOM element.
  */
 export default function DOMSyncZone({ color }: { color: React.MutableRefObject<string> }) {
@@ -15,9 +16,29 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
   const hoverStates = useRef<boolean[]>([]);
   const mixers = useRef<THREE.AnimationMixer[]>([]);
 
+  // We'll duplicate the base model up to N times
+  const MAX_DOM_ELEMENTS = 10;
+
   // Load Lusion GLTF models
   const { scene: panelModel, animations: panelAnims } = useGLTF('/models/panel-anim-bones-02.glb');
   const { scene: femaleModel, animations: femaleAnims } = useGLTF('/models/female.glb');
+  
+  // Clone models properly for SkinnedMeshes and deep-clone materials to avoid affecting other components
+  const clonedScenes = useMemo(() => {
+    return Array.from({ length: MAX_DOM_ELEMENTS }).map((_, i) => {
+      const isPanel = i % 2 === 0;
+      const clone = SkeletonUtils.clone(isPanel ? panelModel : femaleModel);
+      clone.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          if (mesh.material) {
+            mesh.material = (mesh.material as THREE.Material).clone();
+          }
+        }
+      });
+      return clone;
+    });
+  }, [panelModel, femaleModel, MAX_DOM_ELEMENTS]);
   
   // Find all elements to sync on mount and after a short delay (in case Astro renders them late)
   useEffect(() => {
@@ -137,9 +158,10 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
   return (
     <group>
       {elements.map((_, i) => {
+        if (i >= MAX_DOM_ELEMENTS) return null;
+        
         // Alternate models for variety
         const isPanel = i % 2 === 0;
-        const clonedScene = (isPanel ? panelModel : femaleModel).clone();
         const anims = isPanel ? panelAnims : femaleAnims;
 
         return (
@@ -155,7 +177,7 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
               }
             }}
           >
-            <primitive object={clonedScene} />
+            <primitive object={clonedScenes[i]} />
           </group>
         );
       })}
