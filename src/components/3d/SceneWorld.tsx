@@ -48,6 +48,7 @@ import ProjectTilePortals from './ProjectTilePortals';
 
 import { useCameraScroll } from './useCameraScroll';
 import { useCameraIntro } from './useCameraIntro';
+import { interpolateTimeline } from './sceneTimeline';
 
 function getThemeColors() {
   const dark = document.documentElement.getAttribute('data-theme') !== 'light';
