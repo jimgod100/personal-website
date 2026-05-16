@@ -11,7 +11,7 @@ import SectionHeading from './SectionHeading.astro';
 
     <div class="experience__list" data-motion-stagger-group="experience">
       {experience.map((job) => (
-        <article class="experience__item" data-motion="fade-up">
+        <article class="experience__item" data-motion="fade-up" data-dom-sync="true">
           <div class="experience__header">
             <div class="experience__title-group">
               <h3 class="experience__role">{job.role}</h3>

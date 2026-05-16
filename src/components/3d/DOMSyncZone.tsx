@@ -29,7 +29,7 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
     const onLeave = (i: number) => { hoverStates.current[i] = false; };
 
     const findElements = () => {
-      const els = Array.from(document.querySelectorAll<HTMLElement>('[data-webgl-sync]'));
+      const els = Array.from(document.querySelectorAll<HTMLElement>('[data-dom-sync]'));
       
       // Clean up old listeners
       currentEls.forEach((el, i) => {

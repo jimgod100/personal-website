@@ -81,6 +81,8 @@ export default function ScrollSyncImages({ velocityData }: Props) {
           vertexShader,
           fragmentShader,
           side: THREE.DoubleSide,
+          transparent: true,
+          depthWrite: false,
         });
 
         const mesh = new THREE.Mesh(geometry, material);

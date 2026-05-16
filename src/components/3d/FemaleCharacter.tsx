@@ -34,7 +34,12 @@ export default function FemaleCharacter({ baseColor, scrollProgress }: Props) {
     // Try to play animations from animation.glb first, then from female.glb
     const clips = animClips.length > 0 ? animClips : animations;
     if (clips.length > 0) {
-      const action = mixer.clipAction(clips[0]);
+      // Fix track names (e.g., Mixamo prefix mismatch)
+      const clip = clips[0].clone();
+      clip.tracks.forEach((track) => {
+        track.name = track.name.replace('mixamorig', '');
+      });
+      const action = mixer.clipAction(clip);
       action.play();
       action.setLoop(THREE.LoopRepeat, Infinity);
     }

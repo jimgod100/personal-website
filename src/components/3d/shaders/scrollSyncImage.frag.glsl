@@ -42,5 +42,7 @@ void main() {
     }
 
     color /= float(NUM_SAMPLES);
-    gl_FragColor = vec4(color * (1.0 + u_strength * 2.0), 1.0);
+    // Render as a faint watermark glitch behind the card text
+    float alpha = mix(0.1, 0.4, u_strength);
+    gl_FragColor = vec4(color * (1.0 + u_strength * 2.0), alpha);
 }
