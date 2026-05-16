@@ -1,21 +1,51 @@
 /**
- * SceneWorld — root Three.js scene.
- * Manages fog, ambient light, camera updates (scroll + mouse parallax),
- * and mounts ParticleField + WireframeZone.
+ * SceneWorld — Root Three.js scene orchestrating ALL integrated features.
+ * 
+ * Integrates resources from 3 reference projects:
+ * 
+ * From lusion-reverse-engineered-main:
+ *  - AnimatedNurbsTube (nurbs-canxerian.json curve)
+ *  - VideoPanelBones (panel-anim-bones-*.glb models)
+ *  - LoadingScreen (shader-based loading animation)
+ *  - EnvironmentSetup (quarry_01_1k.hdr, grid.png)
+ *  - PhysicsSandboxZone (physics-mask.glb concept)
+ *  - HeroPhysicsZone (physics crosses + optimer font)
+ *  - Project tile GLBs (tile-1 through tile-4)
+ *
+ * From lusion-main:
+ *  - FemaleCharacter (female.glb + animation.glb)
+ *  - DOMSyncZone (panel models synced to DOM)
+ *  - Fonts (GT-Sectra, NB Akademie)
+ *  - Textures (floor.jpg, c3.jpg, dark.png)
+ *
+ * From WebGL-Scroll-Sync-main:
+ *  - ScrollSyncImages (glitch shader on DOM images, 0-7.webp)
  *
  * Camera update order:
- *  1. useCameraIntro runs a GSAP tween on first mount (introFinished.current = false)
- *  2. Once intro completes, the useFrame block below takes full control
- *  ALL camera writes are gated behind introFinished.current to prevent fighting the tween.
+ *  1. useCameraIntro runs a GSAP tween on first mount
+ *  2. Once intro completes, useFrame takes full control
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+
+// Core zones (existing)
 import ParticleField from './ParticleField';
 import WireframeZone from './WireframeZone';
 import HeroPhysicsZone from './HeroPhysicsZone';
 import ScrollTube from './ScrollTube';
 import DOMSyncZone from './DOMSyncZone';
+
+// New integrated zones
+import AnimatedNurbsTube from './AnimatedNurbsTube';
+import VideoPanelBones from './VideoPanelBones';
+import FemaleCharacter from './FemaleCharacter';
+import EnvironmentSetup from './EnvironmentSetup';
+import PhysicsSandboxZone from './PhysicsSandboxZone';
+import LoadingScreen from './LoadingScreen';
+import ScrollSyncImages from './ScrollSyncImages';
+import ProjectTilePortals from './ProjectTilePortals';
+
 import { useCameraScroll } from './useCameraScroll';
 import { useCameraIntro } from './useCameraIntro';
 
@@ -29,8 +59,9 @@ function getThemeColors() {
 
 export default function SceneWorld() {
   const { scene, camera } = useThree();
-  const { scrollData, velocityData } = useCameraScroll();
-  const introFinished = useCameraIntro();    // MutableRefObject<boolean>
+  const { scrollData, velocityData, scrollProgressRef } = useCameraScroll();
+  const introFinished = useCameraIntro();
+  const [loadingComplete, setLoadingComplete] = useState(false);
 
   const accentColor = useRef(getThemeColors().accent);
   const mouse       = useRef({ x: 0, y: 0 });
@@ -98,19 +129,53 @@ export default function SceneWorld() {
 
   return (
     <>
+      {/* ═══ Loading Screen (lusion-reverse-engineered) ═══ */}
+      {!loadingComplete && (
+        <LoadingScreen onComplete={() => setLoadingComplete(true)} />
+      )}
+
+      {/* ═══ Environment (lusion-reverse-engineered HDRI + grid) ═══ */}
+      <EnvironmentSetup scrollProgress={scrollProgressRef} />
+
+      {/* ═══ Lighting ═══ */}
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
+
+      {/* ═══ Zone 1: Hero ═══ */}
+      {/* Particle Field */}
       <ParticleField densityRef={scrollData} baseColor={accentColor} />
       
-      {/* Zone 2 Wireframes */}
-      <WireframeZone opacity={scrollData.current.wireframeOpacity} baseColor={accentColor} />
-
-      {/* Physics Stacking Crosses */}
+      {/* Physics Stacking Crosses (existing) */}
       <HeroPhysicsZone baseColor={accentColor} />
 
-      {/* DOM-to-WebGL Sync Zone for Project Cards */}
+      {/* Female Character (lusion-main: female.glb + animation.glb) */}
+      <FemaleCharacter baseColor={accentColor} scrollProgress={scrollProgressRef} />
+
+      {/* ═══ Zone 2: About / Experience ═══ */}
+      {/* Wireframe Zone */}
+      <WireframeZone opacity={scrollData.current.wireframeOpacity} baseColor={accentColor} />
+
+      {/* Animated NURBS Tube (lusion-reverse-engineered: nurbs-canxerian.json) */}
+      <AnimatedNurbsTube scrollProgress={scrollProgressRef} color={accentColor} />
+
+      {/* Video Panel Bones (lusion-reverse-engineered: panel-anim-bones-*.glb) */}
+      <VideoPanelBones scrollProgress={scrollProgressRef} baseColor={accentColor} />
+
+      {/* ═══ Zone 3: Projects ═══ */}
+      {/* DOM-to-WebGL Sync (lusion-main models synced to cards) */}
       <DOMSyncZone color={accentColor} />
 
+      {/* Project Tile Portals (lusion-reverse-engineered: tile-1 through tile-4.glb) */}
+      <ProjectTilePortals color={accentColor} />
+
+      {/* Scroll-Sync Images (WebGL-Scroll-Sync: shader distortion on images) */}
+      <ScrollSyncImages velocityData={velocityData} />
+
+      {/* ═══ Zone 4: Skills / Education ═══ */}
+      {/* Physics Sandbox (lusion-reverse-engineered concept) */}
+      <PhysicsSandboxZone baseColor={accentColor} scrollProgress={scrollProgressRef} />
+
+      {/* ═══ Zone 5: Contact ═══ */}
       {/* Dynamic Scroll Tube */}
       <ScrollTube color={accentColor} velocityData={velocityData} />
     </>

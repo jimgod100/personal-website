@@ -1,6 +1,7 @@
 /**
  * useCameraScroll — maps page scroll progress (0→1) to scene timeline state.
  * Uses a ref (not state) so that reading in useFrame never triggers React re-renders.
+ * Also exposes a raw scrollProgress ref for components that need 0-1 progress directly.
  */
 import { useEffect, useRef } from 'react';
 import { interpolateTimeline, type TimelineState } from './sceneTimeline';
@@ -8,6 +9,7 @@ import { interpolateTimeline, type TimelineState } from './sceneTimeline';
 export function useCameraScroll() {
   const scrollData = useRef<TimelineState>(interpolateTimeline(0));
   const velocityData = useRef({ velocity: 0, targetVelocity: 0 });
+  const scrollProgressRef = useRef(0);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -17,6 +19,7 @@ export function useCameraScroll() {
       const scrollTop = window.scrollY;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+      scrollProgressRef.current = progress;
       scrollData.current = interpolateTimeline(progress);
     };
 
@@ -47,5 +50,5 @@ export function useCameraScroll() {
     };
   }, []);
 
-  return { scrollData, velocityData }; // Mutable refs for useFrame
+  return { scrollData, velocityData, scrollProgressRef }; // Mutable refs for useFrame
 }

@@ -8,7 +8,7 @@ import * as THREE from 'three';
 
 interface Props {
   densityRef: React.MutableRefObject<{ particleDensity: number }>;
-  baseColor: string;
+  baseColor: React.MutableRefObject<string> | string;
 }
 
 export default function ParticleField({ densityRef, baseColor }: Props) {
@@ -79,7 +79,7 @@ export default function ParticleField({ densityRef, baseColor }: Props) {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, MAX_COUNT]}>
       <sphereGeometry args={[0.08, 4, 4]} />
-      <meshBasicMaterial color={baseColor} transparent opacity={0.6} depthWrite={false} />
+      <meshBasicMaterial color={typeof baseColor === 'string' ? baseColor : baseColor.current} transparent opacity={0.6} depthWrite={false} />
     </instancedMesh>
   );
 }

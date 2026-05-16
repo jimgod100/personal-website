@@ -16,7 +16,7 @@ const featuredProjects = allProjects
     </SectionHeading>
 
     <div class="projects__grid" data-motion-stagger-group="projects">
-      {featuredProjects.map((project) => (
+      {featuredProjects.map((project, i) => (
         <ProjectCard
           title={project.data.title}
           tagline={project.data.tagline}
@@ -26,6 +26,7 @@ const featuredProjects = allProjects
           githubUrl={project.data.githubUrl}
           timeline={project.data.timeline}
           role={project.data.role}
+          index={i}
         />
       ))}
     </div>

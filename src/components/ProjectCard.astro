@@ -8,12 +8,13 @@ interface Props {
   githubUrl?: string;
   timeline: string;
   role: string;
+  index?: number;
 }
 
-const { title, tagline, summary, techStack, slug, githubUrl, timeline, role } = Astro.props;
+const { title, tagline, summary, techStack, slug, githubUrl, timeline, role, index = 0 } = Astro.props;
 ---
 
-<article class="project-card" data-motion="fade-up" data-webgl-sync={slug}>
+<article class="project-card" data-motion="fade-up" data-webgl-sync={slug} id={`tile-portal-${slug}`} data-webgl-image={index}>
   <div class="project-card__body">
     <div class="project-card__header">
       <div class="project-card__meta">

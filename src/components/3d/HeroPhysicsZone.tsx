@@ -39,7 +39,8 @@ const CrossGeometry = ({ color }: { color: string }) => {
   );
 };
 
-export default function HeroPhysicsZone({ baseColor }: { baseColor: string }) {
+export default function HeroPhysicsZone({ baseColor }: { baseColor: React.MutableRefObject<string> | string }) {
+  const getColor = () => typeof baseColor === 'string' ? baseColor : baseColor.current;
   const crosses = useMemo(() => {
     return Array.from({ length: 25 }).map((_, i) => ({
       position: [
@@ -97,7 +98,7 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: string }) {
             onClick={handlePointerEnter}
           >
           <group scale={props.scale}>
-            <CrossGeometry color={baseColor} />
+            <CrossGeometry color={getColor()} />
           </group>
           </RigidBody>
         );
@@ -124,7 +125,7 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: string }) {
             bevelSegments={5}
           >
             LUSION
-            <meshStandardMaterial color={baseColor} roughness={0.1} metalness={0.6} />
+            <meshStandardMaterial color={getColor()} roughness={0.1} metalness={0.6} />
           </Text3D>
         </Center>
       </RigidBody>
