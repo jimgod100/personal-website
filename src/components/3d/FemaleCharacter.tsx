@@ -31,14 +31,16 @@ export default function FemaleCharacter({ baseColor, scrollProgress }: Props) {
     const mixer = new THREE.AnimationMixer(clonedScene);
     mixerRef.current = mixer;
 
-    // Try to play animations from animation.glb first, then from female.glb
-    const clips = animClips.length > 0 ? animClips : animations;
+    // Prefer native animations if available to avoid bone mapping errors
+    const clips = animations.length > 0 ? animations : animClips;
     if (clips.length > 0) {
-      // Fix track names (e.g., Mixamo prefix mismatch)
       const clip = clips[0].clone();
-      clip.tracks.forEach((track) => {
-        track.name = track.name.replace('mixamorig', '');
-      });
+      // Only strip prefix if it's the external animation clip
+      if (clips === animClips) {
+        clip.tracks.forEach((track) => {
+          track.name = track.name.replace('mixamorig', '');
+        });
+      }
       const action = mixer.clipAction(clip);
       action.play();
       action.setLoop(THREE.LoopRepeat, Infinity);

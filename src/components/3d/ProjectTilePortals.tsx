@@ -161,8 +161,11 @@ function SingleTilePortal({ elementId, modelPath, index, color }: TileProps) {
 
     groupRef.current.position.lerp(pos, 0.15);
 
-    // Scale to match DOM size (approximate)
-    const worldHeight = (rect.current.height / window.innerHeight) * 6;
+    // Scale to match DOM size perfectly based on camera FOV and distance
+    const vFov = (mainCamera as THREE.PerspectiveCamera).fov * Math.PI / 180;
+    const distance = Math.abs(mainCamera.position.z - targetZ);
+    const visibleHeight = 2 * Math.tan(vFov / 2) * distance;
+    const worldHeight = visibleHeight * (rect.current.height / window.innerHeight);
     const worldWidth = worldHeight * (rect.current.width / rect.current.height);
     groupRef.current.scale.set(worldWidth, worldHeight, 1);
 

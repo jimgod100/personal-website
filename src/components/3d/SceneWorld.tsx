@@ -176,12 +176,6 @@ export default function SceneWorld() {
       {/* DOM-to-WebGL Sync (lusion-main models synced to cards) */}
       <DOMSyncZone color={accentColor} />
 
-      {/* Project Tile Portals (lusion-reverse-engineered: tile-1 through tile-4.glb) */}
-      <ProjectTilePortals color={accentColor} />
-
-      {/* Scroll-Sync Images (WebGL-Scroll-Sync: shader distortion on images) */}
-      <ScrollSyncImages velocityData={velocityData} />
-
       {/* ═══ Zone 4: Skills / Education ═══ */}
       {/* Physics Sandbox (lusion-reverse-engineered concept) */}
       <PhysicsSandboxZone baseColor={accentColor} scrollProgress={scrollProgressRef} />

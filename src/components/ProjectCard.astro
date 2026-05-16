@@ -14,7 +14,7 @@ interface Props {
 const { title, tagline, summary, techStack, slug, githubUrl, timeline, role, index = 0 } = Astro.props;
 ---
 
-<article class="project-card" data-motion="fade-up" data-webgl-sync={slug} id={`tile-portal-${slug}`} data-webgl-image={index}>
+<article class="project-card" data-motion="fade-up" data-dom-sync="true" id={`tile-portal-${slug}`}>
   <div class="project-card__body">
     <div class="project-card__header">
       <div class="project-card__meta">

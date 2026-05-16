@@ -102,9 +102,9 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
       
       const isHovered = hoverStates.current[index];
 
-      // Scale based on distance or rect size so it roughly matches the card size
-      const baseScale = index % 2 === 0 ? 0.5 : 2.0; // Female model is large, panel is small
-      const targetScale = isHovered ? baseScale * 1.5 : baseScale;
+      // Adjust scale to keep models visible behind cards without clipping
+      const baseScale = index % 2 === 0 ? 1.0 : 1.2; // Panel = 1.0, Female = 1.2
+      const targetScale = isHovered ? baseScale * 1.1 : baseScale;
       group.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
 
       // We'll give it a gentle constant rotation, faster when hovered
@@ -120,10 +120,12 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
           if (m) {
             m.color?.copy(col);
             m.emissive?.copy(col);
-            m.emissiveIntensity = 0.5;
+            m.emissiveIntensity = 0.8;
             m.transparent = true;
-            m.opacity = 0.8;
-            m.wireframe = true;
+            m.opacity = 0.4;
+            m.wireframe = false;
+            m.roughness = 0.1;
+            m.metalness = 0.8;
           }
         }
       });
