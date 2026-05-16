@@ -20,8 +20,8 @@ export interface TimelineState {
 export const sceneTimeline = [
   {
     scroll: 0,
-    cameraZ: 0,
-    cameraY: 0,
+    cameraZ: 12,
+    cameraY: -0.5,
     particleDensity: 1.0,
     wireframeOpacity: 0.0,
     fogDensity: 0.02,
@@ -31,7 +31,7 @@ export const sceneTimeline = [
   },
   {
     scroll: 0.2,
-    cameraZ: 12,
+    cameraZ: 0,
     cameraY: -0.3,
     particleDensity: 0.85,
     wireframeOpacity: 0.6,
@@ -42,7 +42,7 @@ export const sceneTimeline = [
   },
   {
     scroll: 0.4,
-    cameraZ: 24,
+    cameraZ: -15,
     cameraY: 0.2,
     particleDensity: 0.6,
     wireframeOpacity: 0.9,
@@ -53,7 +53,7 @@ export const sceneTimeline = [
   },
   {
     scroll: 0.6,
-    cameraZ: 40,
+    cameraZ: -35,
     cameraY: -0.2,
     particleDensity: 0.3,
     wireframeOpacity: 0.5,
@@ -64,7 +64,7 @@ export const sceneTimeline = [
   },
   {
     scroll: 0.8,
-    cameraZ: 60,
+    cameraZ: -60,
     cameraY: 0.3,
     particleDensity: 0.1,
     wireframeOpacity: 0.2,
@@ -75,7 +75,7 @@ export const sceneTimeline = [
   },
   {
     scroll: 1.0,
-    cameraZ: 85,
+    cameraZ: -90,
     cameraY: 0,
     particleDensity: 0.0,
     wireframeOpacity: 0.0,

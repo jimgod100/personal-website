@@ -61,7 +61,7 @@ export default function SceneWorld() {
   const { scene, camera } = useThree();
   const { scrollData, velocityData, scrollProgressRef } = useCameraScroll();
   const introFinished = useCameraIntro();
-  const [loadingComplete, setLoadingComplete] = useState(false);
+  const [loadingComplete, setLoadingComplete] = useState(true); // Bypass loader
 
   const accentColor = useRef(getThemeColors().accent);
   const mouse       = useRef({ x: 0, y: 0 });

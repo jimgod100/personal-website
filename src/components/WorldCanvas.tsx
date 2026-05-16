@@ -36,7 +36,7 @@ export default function WorldCanvas() {
         camera={{ position: [0, 0, 5], fov: 45 }}
         dpr={Math.min(window.devicePixelRatio, 2)}
         gl={{ powerPreference: 'high-performance', antialias: false }}
-        frameloop={prefersReducedMotion ? 'demand' : 'always'}
+        frameloop="always"
       >
         <Suspense fallback={null}>
           <SceneWorld />

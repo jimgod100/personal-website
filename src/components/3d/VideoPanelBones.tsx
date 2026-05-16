@@ -143,35 +143,35 @@ export default function VideoPanelBones({ scrollProgress, baseColor }: Props) {
       {/* Distribute panels across different scroll ranges */}
       <SinglePanel
         modelPath={PANEL_MODELS[0]}
-        position={[-4, 2, 8]}
+        position={[-4, 2, 2]}
         scrollRange={[0.1, 0.3]}
         baseColor={baseColor}
         scrollProgress={scrollProgress}
       />
       <SinglePanel
         modelPath={PANEL_MODELS[1]}
-        position={[4, -1, 15]}
+        position={[4, -1, -8]}
         scrollRange={[0.2, 0.45]}
         baseColor={baseColor}
         scrollProgress={scrollProgress}
       />
       <SinglePanel
         modelPath={PANEL_MODELS[2]}
-        position={[-3, 0, 22]}
+        position={[-3, 0, -22]}
         scrollRange={[0.35, 0.6]}
         baseColor={baseColor}
         scrollProgress={scrollProgress}
       />
       <SinglePanel
         modelPath={PANEL_MODELS[3]}
-        position={[3, 1, 28]}
+        position={[3, 1, -40]}
         scrollRange={[0.5, 0.75]}
         baseColor={baseColor}
         scrollProgress={scrollProgress}
       />
       <SinglePanel
         modelPath={PANEL_MODELS[4]}
-        position={[0, -1, 35]}
+        position={[0, -1, -65]}
         scrollRange={[0.65, 0.9]}
         baseColor={baseColor}
         scrollProgress={scrollProgress}

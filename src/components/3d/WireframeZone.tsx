@@ -23,7 +23,7 @@ export default function WireframeZone({ opacity, baseColor }: Props) {
   const colorValue = typeof baseColor === 'string' ? baseColor : baseColor.current;
   
   return (
-    <group ref={groupRef} position={[0, -2, 20]}>
+    <group ref={groupRef} position={[0, -2, -15]}>
       {/* A large central structure */}
       <mesh>
         <icosahedronGeometry args={[8, 1]} />
