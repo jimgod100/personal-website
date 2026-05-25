@@ -2,6 +2,8 @@ import React, { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
+const _tubeColor = new THREE.Color();
+
 export default function ScrollTube({ color, velocityData }: { color: React.MutableRefObject<string>, velocityData: React.MutableRefObject<{velocity: number, targetVelocity: number}> }) {
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -24,9 +26,9 @@ export default function ScrollTube({ color, velocityData }: { color: React.Mutab
       materialRef.current.emissiveIntensity = 0.5 + Math.sin(state.clock.elapsedTime * 2) * 0.5 + (v * 5);
       
       // Update color based on the current theme
-      const col = new THREE.Color(color.current);
-      materialRef.current.color.copy(col);
-      materialRef.current.emissive.copy(col);
+      _tubeColor.set(color.current);
+      materialRef.current.color.copy(_tubeColor);
+      materialRef.current.emissive.copy(_tubeColor);
     }
     
     if (meshRef.current) {

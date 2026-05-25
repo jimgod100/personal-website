@@ -33,13 +33,15 @@ export default function WorldCanvas() {
       aria-hidden="true"
     >
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
+        camera={{ position: [0, 0, 12], fov: 45 }}
         dpr={Math.min(window.devicePixelRatio, 2)}
         gl={{ powerPreference: 'high-performance', antialias: false }}
         frameloop="always"
+        eventSource={typeof document !== 'undefined' ? document.body : undefined}
+        eventPrefix="client"
       >
         <Suspense fallback={null}>
-          <SceneWorld />
+          {!prefersReducedMotion && <SceneWorld />}
         </Suspense>
       </Canvas>
     </div>

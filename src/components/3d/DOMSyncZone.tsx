@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
-import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
+
+// Cached objects to avoid per-frame GC pressure
+const _vec3 = new THREE.Vector3();
+const _scaleVec = new THREE.Vector3();
+const _color = new THREE.Color();
+const _hsl = { h: 0, s: 0, l: 0 };
 
 /**
  * DOMSyncZone mimics Lusion's WebGL-Scroll-Sync.
@@ -93,6 +99,8 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
     // Update animations
     mixers.current.forEach(mixer => mixer.update(delta));
 
+    const isDarkMode = document.documentElement.getAttribute('data-theme') !== 'light';
+
     elements.forEach((el, index) => {
       const group = groupRefs.current[index];
       if (!group) return;
@@ -105,48 +113,61 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
       const y = -(rect.top + rect.height / 2) / window.innerHeight * 2 + 1;
 
       // Project NDC to World Space at a specific Z depth
-      const vector = new THREE.Vector3(x, y, 0.5);
-      vector.unproject(camera);
+      _vec3.set(x, y, 0.5);
+      _vec3.unproject(camera);
 
       // The vector is now a point on the ray from the camera. 
       // We need to place our mesh at a fixed distance from the camera or at z=0.
-      // Since the camera is moving in Z, we'll place it slightly in front of the camera's Z.
-      const targetZ = camera.position.z - 5; 
+      // Push models further back to stay strictly behind cards and avoid 'giant' look
+      const targetZ = camera.position.z - 4; 
       
       // Calculate intersection with plane Z = targetZ
-      const dir = vector.sub(camera.position).normalize();
+      const dir = _vec3.sub(camera.position).normalize();
       const distance = (targetZ - camera.position.z) / dir.z;
-      const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+      // dir is now _vec3, so we need a separate vector for pos
+      _scaleVec.copy(camera.position).add(dir.multiplyScalar(distance));
 
       // Smooth interpolation for silky movement
-      group.position.lerp(pos, 0.1);
+      group.position.lerp(_scaleVec, 0.1);
       
       const isHovered = hoverStates.current[index];
 
-      // Adjust scale to keep models visible behind cards without clipping
-      const baseScale = index % 2 === 0 ? 1.0 : 1.2; // Panel = 1.0, Female = 1.2
-      const targetScale = isHovered ? baseScale * 1.1 : baseScale;
-      group.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+      // Smaller scales to fit neatly behind cards
+      const baseScale = index % 2 === 0 ? 0.6 : 0.8; // Panel = 0.6, Female = 0.8
+      const targetScale = isHovered ? baseScale * 1.15 : baseScale;
+      group.scale.setScalar(THREE.MathUtils.lerp(group.scale.x, targetScale, 0.1));
 
       // We'll give it a gentle constant rotation, faster when hovered
       const rotSpeed = isHovered ? 0.05 : 0.01;
       group.rotation.x += rotSpeed;
       group.rotation.y += rotSpeed * 1.5;
 
-      // Pulse color on children
-      const col = new THREE.Color(color.current);
+      // Theme-aware Holographic styling
+      _color.set(color.current);
+      
+      if (!isDarkMode) {
+        // In Light Mode, we need the model to be darker/more saturated to be visible on white
+        _color.getHSL(_hsl);
+        _hsl.s = 1.0;
+        _hsl.l = Math.min(_hsl.l, 0.35);
+        _color.setHSL(_hsl.h, _hsl.s, _hsl.l);
+      }
+
       group.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const m = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
           if (m) {
-            m.color?.copy(col);
-            m.emissive?.copy(col);
-            m.emissiveIntensity = 0.8;
+            m.color?.copy(_color);
+            m.emissive?.copy(_color);
+            m.emissiveIntensity = isDarkMode ? (isHovered ? 2.5 : 1.5) : (isHovered ? 1.0 : 0.5);
             m.transparent = true;
-            m.opacity = 0.4;
-            m.wireframe = false;
-            m.roughness = 0.1;
-            m.metalness = 0.8;
+            m.opacity = isDarkMode ? (isHovered ? 0.8 : 0.6) : (isHovered ? 0.95 : 0.85);
+            m.wireframe = isHovered;
+            m.roughness = 0.0;
+            m.metalness = 1.0;
+            // Additive blending looks amazing in dark mode, but breaks in light mode
+            m.blending = isDarkMode ? THREE.AdditiveBlending : THREE.NormalBlending;
+            m.depthWrite = !isDarkMode; // Allow transparency stacking in dark mode
           }
         }
       });

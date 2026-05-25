@@ -15,13 +15,13 @@ export function useCameraIntro() {
     }
 
     // Start slightly behind and elevated
-    camera.position.set(0, 1.5, -5);
+    camera.position.set(0, 1.5, 15);
     
     // Animate to neutral origin
     gsap.to(camera.position, {
       x: 0,
-      y: 0,
-      z: 0,
+      y: -0.5,
+      z: 12,
       duration: 2.2,
       ease: 'power3.out',
       onComplete: () => {

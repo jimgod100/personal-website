@@ -2,6 +2,8 @@ export const experience = [
   {
     role: "Software Engineer",
     company: "CTBC Bank",
+    department: "Digital Banking & Fintech",
+    location: "Taipei, Taiwan",
     period: "2024 — Present",
     summary:
       "Built and maintained internal financial systems for SME lending workflows, focusing on backend reliability, system integration, and operational tooling.",

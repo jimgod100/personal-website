@@ -60,11 +60,13 @@ export default function AnimatedNurbsTube({ scrollProgress, color }: Props) {
 
     pData.forEach((v) => data.push(v.x, v.y, v.z, 0));
     ffData.tangents.forEach((v) => data.push(v.x, v.y, v.z, 0));
+    ffData.normals.forEach((v) => data.push(v.x, v.y, v.z, 0));
+    ffData.binormals.forEach((v) => data.push(v.x, v.y, v.z, 0));
 
     const dt = new THREE.DataTexture(
       new Float32Array(data),
       texSize,
-      2,
+      4, // 4 rows: points, tangents, normals, binormals
       THREE.RGBAFormat,
       THREE.FloatType
     );
@@ -145,22 +147,33 @@ export default function AnimatedNurbsTube({ scrollProgress, color }: Props) {
             vec3 pos = position;
             vec3 cpos = vec3(0.);
             vec3 ctan = vec3(0.);
+            vec3 cnorm = vec3(0.);
+            vec3 cbin = vec3(0.);
             float a = clamp(pos.z + 0.5, 0., 1.) * stretchRatio;
             if(pos.z < -0.5) {
-              cpos = vec3(texture(curveTexture, vec2(0., 0.25)));
-              ctan = vec3(texture(curveTexture, vec2(0., 0.75)));
+              cpos = vec3(texture(curveTexture, vec2(0., 0.125)));
+              ctan = vec3(texture(curveTexture, vec2(0., 0.375)));
+              cnorm = vec3(texture(curveTexture, vec2(0., 0.625)));
+              cbin = vec3(texture(curveTexture, vec2(0., 0.875)));
               pos.z += 0.5;
-            } else if(pos.z >= -0.5) {
-              cpos = vec3(texture(curveTexture, vec2(a, 0.25)));
-              ctan = vec3(texture(curveTexture, vec2(a, 0.75)));
+            } else {
+              cpos = vec3(texture(curveTexture, vec2(a, 0.125)));
+              ctan = vec3(texture(curveTexture, vec2(a, 0.375)));
+              cnorm = vec3(texture(curveTexture, vec2(a, 0.625)));
+              cbin = vec3(texture(curveTexture, vec2(a, 0.875)));
               pos.z = (pos.z > 0.5) ? (pos.z - 0.5) : 0.;
             }
+            
+            // Build Frenet frame rotation and apply to normals
+            vec3 N = normalize(cnorm);
+            vec3 B = normalize(cbin);
+            objectNormal = normalize(N * normal.x + B * normal.y);
           `
           ).replace(
             `#include <begin_vertex>`,
             `#include <begin_vertex>
-            transformed = pos;
-            transformed += cpos;
+            // Apply Frenet frame rotation and curve displacement
+            transformed = normalize(cnorm) * pos.x + normalize(cbin) * pos.y + cpos;
           `
           );
         }}

@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier';
 import { useFrame } from '@react-three/fiber';
-import { Text3D, Center } from '@react-three/drei';
 import vertexShader from './shaders/heroCross.vert.glsl';
 import fragmentShader from './shaders/heroCross.frag.glsl';
 
@@ -23,15 +22,15 @@ const CrossGeometry = ({ color }: { color: string }) => {
 
   return (
     <group>
-      <mesh castShadow receiveShadow>
+      <mesh>
         <boxGeometry args={[1, 0.2, 0.2]} />
         <shaderMaterial ref={materialRef} vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
       </mesh>
-      <mesh castShadow receiveShadow>
+      <mesh>
         <boxGeometry args={[0.2, 1, 0.2]} />
         <shaderMaterial vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
       </mesh>
-      <mesh castShadow receiveShadow>
+      <mesh>
         <boxGeometry args={[0.2, 0.2, 1]} />
         <shaderMaterial vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
       </mesh>
@@ -39,14 +38,59 @@ const CrossGeometry = ({ color }: { color: string }) => {
   );
 };
 
+/** Individual cross with its own ref — avoids useRef inside .map() */
+function PhysicsCross({
+  position,
+  rotation,
+  scale,
+  color,
+}: {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: number;
+  color: string;
+}) {
+  const rbRef = useRef<any>(null);
+
+  const handlePointerEnter = () => {
+    if (rbRef.current) {
+      rbRef.current.applyImpulse(
+        { x: (Math.random() - 0.5) * 2, y: 5, z: (Math.random() - 0.5) * 2 },
+        true
+      );
+      rbRef.current.applyTorqueImpulse(
+        { x: Math.random() * 2, y: Math.random() * 2, z: Math.random() * 2 },
+        true
+      );
+    }
+  };
+
+  return (
+    <RigidBody
+      ref={rbRef}
+      colliders="hull"
+      position={position}
+      rotation={rotation}
+      restitution={0.5}
+      friction={0.5}
+      onPointerEnter={handlePointerEnter}
+      onClick={handlePointerEnter}
+    >
+      <group scale={scale}>
+        <CrossGeometry color={color} />
+      </group>
+    </RigidBody>
+  );
+}
+
 export default function HeroPhysicsZone({ baseColor }: { baseColor: React.MutableRefObject<string> | string }) {
   const getColor = () => typeof baseColor === 'string' ? baseColor : baseColor.current;
   const crosses = useMemo(() => {
     return Array.from({ length: 25 }).map((_, i) => ({
       position: [
-        (Math.random() - 0.5) * 6, 
-        10 + Math.random() * 20, // Start high
-        (Math.random() - 0.5) * 4 - 2 // z near 0
+        (Math.random() - 0.5) * 6,
+        10 + Math.random() * 20,
+        (Math.random() - 0.5) * 4 - 2
       ] as [number, number, number],
       rotation: [
         Math.random() * Math.PI,
@@ -75,61 +119,15 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: React.Mutabl
         <CuboidCollider args={[10, 20, 1]} />
       </RigidBody>
 
-      {crosses.map((props, i) => {
-        const rbRef = React.useRef<any>(null);
-
-        const handlePointerEnter = () => {
-          if (rbRef.current) {
-            rbRef.current.applyImpulse({ x: (Math.random() - 0.5) * 2, y: 5, z: (Math.random() - 0.5) * 2 }, true);
-            rbRef.current.applyTorqueImpulse({ x: Math.random() * 2, y: Math.random() * 2, z: Math.random() * 2 }, true);
-          }
-        };
-
-        return (
-          <RigidBody 
-            key={i} 
-            ref={rbRef}
-            colliders="hull" 
-            position={props.position} 
-            rotation={props.rotation} 
-            restitution={0.5} 
-            friction={0.5}
-            onPointerEnter={handlePointerEnter}
-            onClick={handlePointerEnter}
-          >
-          <group scale={props.scale}>
-            <CrossGeometry color={getColor()} />
-          </group>
-          </RigidBody>
-        );
-      })}
-
-      {/* Floating 3D Text from lusion-reverse-engineered-main */}
-      <RigidBody 
-        type="dynamic" 
-        colliders="cuboid" 
-        position={[0, 5, 0]}
-        restitution={0.6}
-        friction={0.2}
-      >
-        <Center>
-          <Text3D
-            font="/fonts/optimer_regular.typeface.json"
-            size={1.5}
-            height={0.4}
-            curveSegments={12}
-            bevelEnabled
-            bevelThickness={0.1}
-            bevelSize={0.05}
-            bevelOffset={0}
-            bevelSegments={5}
-          >
-            LUSION
-            <meshStandardMaterial color={getColor()} roughness={0.1} metalness={0.6} />
-          </Text3D>
-        </Center>
-      </RigidBody>
-
+      {crosses.map((props, i) => (
+        <PhysicsCross
+          key={i}
+          position={props.position}
+          rotation={props.rotation}
+          scale={props.scale}
+          color={getColor()}
+        />
+      ))}
     </Physics>
   );
 }

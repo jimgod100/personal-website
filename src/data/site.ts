@@ -25,6 +25,7 @@ export const site = {
     "I am moving toward computer science and AI-oriented software engineering, with long-term goals in global technology companies. I am preparing for a CS Master's degree focused on applied AI and distributed systems.",
     "I care about building reliable, scalable systems that solve real operational problems — and about understanding the engineering decisions behind them, not just making them work."
   ],
+  openTo: "CS/AI Master's programs, backend & platform engineering roles at global tech companies, and open-source collaboration opportunities.",
   goals: {
     headline: "Next Step",
     body:

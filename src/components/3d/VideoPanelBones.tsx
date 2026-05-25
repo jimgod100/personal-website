@@ -11,6 +11,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 const PANEL_MODELS = [
   '/models/panel-anim-bones.glb',
@@ -41,7 +42,7 @@ function SinglePanel({
   const { scene, animations } = useGLTF(modelPath);
   const groupRef = useRef<THREE.Group>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
-  const clonedScene = useMemo(() => scene.clone(), [scene]);
+  const clonedScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 
   // Find bones in the model
   const bones = useRef<{
@@ -55,10 +56,11 @@ function SinglePanel({
     clonedScene.traverse((child) => {
       if ((child as THREE.Bone).isBone) {
         const bone = child as THREE.Bone;
-        if (bone.name.includes('TL') || bone.name.includes('tl')) bones.current.tl = bone;
-        if (bone.name.includes('TR') || bone.name.includes('tr')) bones.current.tr = bone;
-        if (bone.name.includes('BL') || bone.name.includes('bl')) bones.current.bl = bone;
-        if (bone.name.includes('BR') || bone.name.includes('br')) bones.current.br = bone;
+        const n = bone.name.toUpperCase();
+        if (n.endsWith('TL') || n === 'TL') bones.current.tl = bone;
+        if (n.endsWith('TR') || n === 'TR') bones.current.tr = bone;
+        if (n.endsWith('BL') || n === 'BL') bones.current.bl = bone;
+        if (n.endsWith('BR') || n === 'BR') bones.current.br = bone;
       }
 
       // Apply wireframe material with accent color
@@ -121,13 +123,16 @@ function SinglePanel({
     groupRef.current.rotation.y = state.clock.elapsedTime * 0.2 + localProgress * Math.PI;
     groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
 
-    // Update material color
-    clonedScene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
-        if (mat.color) mat.color.set(baseColor.current);
-      }
-    });
+    // Update material color (throttled - only when color changes)
+    if (groupRef.current && groupRef.current.userData.lastColor !== baseColor.current) {
+      groupRef.current.userData.lastColor = baseColor.current;
+      clonedScene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
+          if (mat.color) mat.color.set(baseColor.current);
+        }
+      });
+    }
   });
 
   return (

@@ -26,6 +26,15 @@ interface Ball {
   radius: number;
 }
 
+// Pre-allocated vectors to avoid per-frame GC pressure
+const _center = new THREE.Vector3(0, 0, 0);
+const _mouseWorld = new THREE.Vector3();
+const _toCenter = new THREE.Vector3();
+const _toMouse = new THREE.Vector3();
+const _diff = new THREE.Vector3();
+const _push = new THREE.Vector3();
+const _accentColor = new THREE.Color();
+
 export default function PhysicsSandboxZone({ baseColor, scrollProgress }: Props) {
   const groupRef = useRef<THREE.Group>(null);
   const mouseRef = useRef(new THREE.Vector2(0, 0));
@@ -89,35 +98,37 @@ export default function PhysicsSandboxZone({ baseColor, scrollProgress }: Props)
     groupRef.current.visible = visibility > 0;
     if (!visibility) return;
 
-    const centerPos = new THREE.Vector3(0, 0, 0);
-    const mouseWorld = new THREE.Vector3(
+    _mouseWorld.set(
       mouseRef.current.x * 3,
       mouseRef.current.y * 3,
       0
     );
 
+    _accentColor.set(baseColor.current);
+
     balls.forEach((ball) => {
       // Attraction to center
-      const toCenter = centerPos.clone().sub(ball.mesh.position);
-      ball.velocity.add(toCenter.multiplyScalar(ATTRACTION_FORCE));
+      _toCenter.copy(_center).sub(ball.mesh.position);
+      ball.velocity.addScaledVector(_toCenter, ATTRACTION_FORCE);
 
       // Mouse repulsion
-      const toMouse = ball.mesh.position.clone().sub(mouseWorld);
-      const mouseDist = toMouse.length();
+      _toMouse.copy(ball.mesh.position).sub(_mouseWorld);
+      const mouseDist = _toMouse.length();
       if (mouseDist < 1.5) {
-        ball.velocity.add(toMouse.normalize().multiplyScalar(0.02 / (mouseDist + 0.1)));
+        _toMouse.normalize();
+        ball.velocity.addScaledVector(_toMouse, 0.02 / (mouseDist + 0.1));
       }
 
       // Ball-ball collision
       balls.forEach((other) => {
         if (other === ball) return;
-        const diff = ball.mesh.position.clone().sub(other.mesh.position);
-        const dist = diff.length();
+        _diff.copy(ball.mesh.position).sub(other.mesh.position);
+        const dist = _diff.length();
         const minDist = ball.radius + other.radius;
         if (dist < minDist) {
-          const push = diff.normalize().multiplyScalar((minDist - dist) * 0.5);
-          ball.velocity.add(push);
-          other.velocity.sub(push);
+          _push.copy(_diff).normalize().multiplyScalar((minDist - dist) * 0.5);
+          ball.velocity.add(_push);
+          other.velocity.sub(_push);
         }
       });
 
@@ -128,8 +139,7 @@ export default function PhysicsSandboxZone({ baseColor, scrollProgress }: Props)
 
       // Update color
       const mat = ball.mesh.material as THREE.MeshStandardMaterial;
-      const accent = new THREE.Color(baseColor.current);
-      mat.color.lerp(accent, 0.02);
+      mat.color.lerp(_accentColor, 0.02);
     });
   });
 

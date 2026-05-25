@@ -83,6 +83,7 @@ const { title, tagline, summary, techStack, slug, githubUrl, timeline, role, ind
     box-shadow: var(--shadow-card);
     overflow: hidden;
     will-change: transform;
+    transform: var(--card-tilt, none) skewY(var(--skew-y, 0deg));
   }
 
   /* Enhanced hover */
@@ -247,13 +248,13 @@ const { title, tagline, summary, techStack, slug, githubUrl, timeline, role, ind
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;   // -0.5 to 0.5
         const y = (e.clientY - rect.top) / rect.height - 0.5;   // -0.5 to 0.5
-        card.style.transform =
-          `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 8}deg) translateY(-4px)`;
+        card.style.setProperty('--card-tilt',
+          `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 8}deg) translateY(-4px)`);
         card.classList.add('is-tilting');
       });
 
       card.addEventListener('mouseleave', () => {
-        card.style.transform = '';
+        card.style.removeProperty('--card-tilt');
         card.classList.remove('is-tilting');
       });
     });

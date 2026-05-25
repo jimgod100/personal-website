@@ -60,6 +60,7 @@ import SectionHeading from './SectionHeading.astro';
     padding: var(--space-8);
     box-shadow: var(--shadow-card);
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    transform: var(--card-tilt, none) skewY(var(--skew-y, 0deg));
   }
 
   .experience__item:hover {

@@ -6,7 +6,7 @@ timeline: "2024 Q1 — Q2"
 role: "Lead Developer (Capstone Project)"
 stack: ["C#", "ASP.NET MVC", "LINE Bot SDK", "Azure", "SQL Server", "Bootstrap"]
 techStack: ["C#", "ASP.NET MVC", "LINE Bot SDK", "Azure", "SQL Server", "Bootstrap"]
-github: "https://github.com/jimgod100"
+githubUrl: "https://github.com/jimgod100"
 featured: true
 order: 2
 ---

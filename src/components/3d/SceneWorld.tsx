@@ -39,12 +39,8 @@ import DOMSyncZone from './DOMSyncZone';
 // New integrated zones
 import AnimatedNurbsTube from './AnimatedNurbsTube';
 import VideoPanelBones from './VideoPanelBones';
-import FemaleCharacter from './FemaleCharacter';
 import EnvironmentSetup from './EnvironmentSetup';
 import PhysicsSandboxZone from './PhysicsSandboxZone';
-import LoadingScreen from './LoadingScreen';
-import ScrollSyncImages from './ScrollSyncImages';
-import ProjectTilePortals from './ProjectTilePortals';
 
 import { useCameraScroll } from './useCameraScroll';
 import { useCameraIntro } from './useCameraIntro';
@@ -62,7 +58,6 @@ export default function SceneWorld() {
   const { scene, camera } = useThree();
   const { scrollData, velocityData, scrollProgressRef } = useCameraScroll();
   const introFinished = useCameraIntro();
-  const [loadingComplete, setLoadingComplete] = useState(true); // Bypass loader
 
   const accentColor = useRef(getThemeColors().accent);
   const mouse       = useRef({ x: 0, y: 0 });
@@ -99,6 +94,7 @@ export default function SceneWorld() {
   }, []);
 
   const lerpedProgress = useRef(0);
+  const smoothedWireframeOpacity = useRef(0);
 
   // ── Per-frame: fog density + camera ─────────────────────────────────────
   useFrame((state, delta) => {
@@ -111,6 +107,7 @@ export default function SceneWorld() {
     
     // Update timeline state with smoothed progress
     const sd = interpolateTimeline(lerpedProgress.current);
+    smoothedWireframeOpacity.current = sd.wireframeOpacity;
     
     // Update fog density
     if (scene.fog instanceof THREE.FogExp2) {
@@ -126,7 +123,7 @@ export default function SceneWorld() {
     camera.position.y = THREE.MathUtils.lerp(camera.position.y, sd.cameraY + breathY, 0.1);
 
     // Mouse parallax fades as camera moves deep into scene
-    const parallaxFactor = Math.max(0, 1 - sd.cameraZ / 20);
+    const parallaxFactor = Math.max(0, Math.min(1, 1 - Math.abs(sd.cameraZ - 12) / 30));
     if (parallaxFactor > 0) {
       camera.position.x  = THREE.MathUtils.lerp(camera.position.x,  mouse.current.x *  0.5  * parallaxFactor, 0.05);
       camera.rotation.y  = THREE.MathUtils.lerp(camera.rotation.y,  -mouse.current.x * 0.05 * parallaxFactor, 0.05);
@@ -140,17 +137,14 @@ export default function SceneWorld() {
 
   return (
     <>
-      {/* ═══ Loading Screen (lusion-reverse-engineered) ═══ */}
-      {!loadingComplete && (
-        <LoadingScreen onComplete={() => setLoadingComplete(true)} />
-      )}
+      {/* Loading screen removed — bypassed */}
 
       {/* ═══ Environment (lusion-reverse-engineered HDRI + grid) ═══ */}
       <EnvironmentSetup scrollProgress={scrollProgressRef} />
 
       {/* ═══ Lighting ═══ */}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[10, 20, 20]} intensity={1.5} />
 
       {/* ═══ Zone 1: Hero ═══ */}
       {/* Particle Field */}
@@ -159,12 +153,9 @@ export default function SceneWorld() {
       {/* Physics Stacking Crosses (existing) */}
       <HeroPhysicsZone baseColor={accentColor} />
 
-      {/* Female Character (lusion-main: female.glb + animation.glb) */}
-      <FemaleCharacter baseColor={accentColor} scrollProgress={scrollProgressRef} />
-
       {/* ═══ Zone 2: About / Experience ═══ */}
       {/* Wireframe Zone */}
-      <WireframeZone opacity={scrollData.current.wireframeOpacity} baseColor={accentColor} />
+      <WireframeZone opacityRef={smoothedWireframeOpacity} baseColor={accentColor} />
 
       {/* Animated NURBS Tube (lusion-reverse-engineered: nurbs-canxerian.json) */}
       <AnimatedNurbsTube scrollProgress={scrollProgressRef} color={accentColor} />
