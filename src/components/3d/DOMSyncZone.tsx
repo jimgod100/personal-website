@@ -130,6 +130,7 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
       // Smooth interpolation for silky movement
       group.position.lerp(_scaleVec, 0.1);
       
+      // Subtle hover glow — preserve original GLB materials
       const isHovered = hoverStates.current[index];
 
       // Smaller scales to fit neatly behind cards
@@ -137,37 +138,23 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
       const targetScale = isHovered ? baseScale * 1.15 : baseScale;
       group.scale.setScalar(THREE.MathUtils.lerp(group.scale.x, targetScale, 0.1));
 
-      // We'll give it a gentle constant rotation, faster when hovered
+      // Gentle constant rotation, faster when hovered
       const rotSpeed = isHovered ? 0.05 : 0.01;
       group.rotation.x += rotSpeed;
       group.rotation.y += rotSpeed * 1.5;
-
-      // Theme-aware Holographic styling
-      _color.set(color.current);
-      
-      if (!isDarkMode) {
-        // In Light Mode, we need the model to be darker/more saturated to be visible on white
-        _color.getHSL(_hsl);
-        _hsl.s = 1.0;
-        _hsl.l = Math.min(_hsl.l, 0.35);
-        _color.setHSL(_hsl.h, _hsl.s, _hsl.l);
-      }
-
       group.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const m = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
           if (m) {
-            m.color?.copy(_color);
-            m.emissive?.copy(_color);
-            m.emissiveIntensity = isDarkMode ? (isHovered ? 2.5 : 1.5) : (isHovered ? 1.0 : 0.5);
-            m.transparent = true;
-            m.opacity = isDarkMode ? (isHovered ? 0.8 : 0.6) : (isHovered ? 0.95 : 0.85);
-            m.wireframe = isHovered;
-            m.roughness = 0.0;
-            m.metalness = 1.0;
-            // Additive blending looks amazing in dark mode, but breaks in light mode
-            m.blending = isDarkMode ? THREE.AdditiveBlending : THREE.NormalBlending;
-            m.depthWrite = !isDarkMode; // Allow transparency stacking in dark mode
+            // Only tweak emissive for hover feedback, leave original color/roughness/metalness/maps intact
+            const targetEmissiveIntensity = isHovered ? 0.4 : 0.0;
+            m.emissiveIntensity = THREE.MathUtils.lerp(m.emissiveIntensity, targetEmissiveIntensity, 0.1);
+            if (isHovered && m.emissive) {
+              _color.set(color.current);
+              m.emissive.lerp(_color, 0.1);
+            } else if (m.emissive) {
+              m.emissive.lerp(new THREE.Color(0x000000), 0.1);
+            }
           }
         }
       });

@@ -63,17 +63,12 @@ function SinglePanel({
         if (n.endsWith('BR') || n === 'BR') bones.current.br = bone;
       }
 
-      // Apply wireframe material with accent color
+      // Deep-clone materials for isolation, but preserve original textures/colors
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
-        mesh.material = new THREE.MeshStandardMaterial({
-          color: baseColor.current,
-          roughness: 0.2,
-          metalness: 0.6,
-          transparent: true,
-          opacity: 0.7,
-          wireframe: false,
-        });
+        if (mesh.material) {
+          mesh.material = (mesh.material as THREE.Material).clone();
+        }
       }
     });
 
@@ -123,16 +118,7 @@ function SinglePanel({
     groupRef.current.rotation.y = state.clock.elapsedTime * 0.2 + localProgress * Math.PI;
     groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
 
-    // Update material color (throttled - only when color changes)
-    if (groupRef.current && groupRef.current.userData.lastColor !== baseColor.current) {
-      groupRef.current.userData.lastColor = baseColor.current;
-      clonedScene.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
-          if (mat.color) mat.color.set(baseColor.current);
-        }
-      });
-    }
+
   });
 
   return (
