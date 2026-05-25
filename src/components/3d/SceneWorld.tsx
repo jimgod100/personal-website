@@ -142,9 +142,10 @@ export default function SceneWorld() {
       {/* ═══ Environment (lusion-reverse-engineered HDRI + grid) ═══ */}
       <EnvironmentSetup scrollProgress={scrollProgressRef} />
 
-      {/* ═══ Lighting ═══ */}
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[10, 20, 20]} intensity={1.5} />
+      {/* ═══ Lighting — warm ambient + directional + warm fill ═══ */}
+      <ambientLight intensity={0.5} color="#e8e4df" />
+      <directionalLight position={[10, 20, 20]} intensity={1.8} color="#ffffff" />
+      <pointLight position={[0, 3, 15]} intensity={4} color="#ffd4a0" distance={40} decay={2} />
 
       {/* ═══ Zone 1: Hero ═══ */}
       {/* Particle Field */}

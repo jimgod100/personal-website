@@ -7,6 +7,13 @@ interface Props {
   baseColor: React.MutableRefObject<string> | string;
 }
 
+// Multi-color wireframe palette — Violet / Blue / Purple
+const WIREFRAME_COLORS = {
+  primary:   '#7c5cbf', // Violet — main icosahedron
+  secondary: '#5b8dd9', // Blue — floating plane 1
+  tertiary:  '#a855f7', // Purple — floating plane 2
+};
+
 export default function WireframeZone({ opacityRef, baseColor }: Props) {
   const groupRef = useRef<THREE.Group>(null);
   const mat1Ref = useRef<THREE.MeshBasicMaterial>(null);
@@ -24,22 +31,20 @@ export default function WireframeZone({ opacityRef, baseColor }: Props) {
     const op = opacityRef.current;
     groupRef.current.visible = op > 0.01;
     if (op > 0.01) {
-      if (mat1Ref.current) mat1Ref.current.opacity = op * 0.15;
-      if (mat2Ref.current) mat2Ref.current.opacity = op * 0.2;
-      if (mat3Ref.current) mat3Ref.current.opacity = op * 0.1;
+      if (mat1Ref.current) mat1Ref.current.opacity = op * 0.18;
+      if (mat2Ref.current) mat2Ref.current.opacity = op * 0.22;
+      if (mat3Ref.current) mat3Ref.current.opacity = op * 0.14;
     }
   });
 
-  const colorValue = typeof baseColor === 'string' ? baseColor : baseColor.current;
-  
   return (
     <group ref={groupRef} position={[0, -2, -15]} visible={false}>
-      {/* A large central structure */}
+      {/* Main icosahedron — Violet */}
       <mesh>
         <icosahedronGeometry args={[8, 1]} />
         <meshBasicMaterial 
           ref={mat1Ref}
-          color={colorValue} 
+          color={WIREFRAME_COLORS.primary} 
           wireframe 
           transparent 
           opacity={0} 
@@ -47,17 +52,17 @@ export default function WireframeZone({ opacityRef, baseColor }: Props) {
         />
       </mesh>
       
-      {/* Some floating geometric planes */}
+      {/* Floating plane 1 — Blue */}
       <mesh position={[-10, 5, -5]} rotation={[Math.PI/2, 0, 0]}>
         <planeGeometry args={[10, 10, 4, 4]} />
-        <meshBasicMaterial ref={mat2Ref} color={colorValue} wireframe transparent opacity={0} />
+        <meshBasicMaterial ref={mat2Ref} color={WIREFRAME_COLORS.secondary} wireframe transparent opacity={0} depthWrite={false} />
       </mesh>
       
+      {/* Floating plane 2 — Purple */}
       <mesh position={[10, -5, 5]} rotation={[0, Math.PI/4, 0]}>
         <planeGeometry args={[15, 15, 6, 6]} />
-        <meshBasicMaterial ref={mat3Ref} color={colorValue} wireframe transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial ref={mat3Ref} color={WIREFRAME_COLORS.tertiary} wireframe transparent opacity={0} depthWrite={false} />
       </mesh>
     </group>
   );
 }
-

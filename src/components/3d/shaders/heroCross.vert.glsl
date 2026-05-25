@@ -1,5 +1,6 @@
 uniform float uTime;
 uniform vec3 uColor;
+uniform float uHueShift;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vViewPosition;

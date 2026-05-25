@@ -153,7 +153,7 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
               _color.set(color.current);
               m.emissive.lerp(_color, 0.1);
             } else if (m.emissive) {
-              m.emissive.lerp(new THREE.Color(0x000000), 0.1);
+              m.emissive.lerp(_color.set(0x000000), 0.1);
             }
           }
         }

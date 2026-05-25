@@ -4,16 +4,25 @@
  * can be pushed around by mouse movement. Uses stencil masking
  * to constrain visibility to a specific region (matching a DOM element).
  *
- * Uses: physics-mask.glb, physics-sandbox-mask.glb
+ * Multi-color palette: coral, gold, purple, teal — no accent color override.
  */
 import React, { useMemo, useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 const BALL_COUNT = 20;
 const ATTRACTION_FORCE = 0.03;
 const DAMPING = 0.95;
+
+// Multi-color palette for physics balls
+const BALL_PALETTE = [
+  { color: '#e06c75', roughness: 0.22, metalness: 0.0 },   // Coral — rubber
+  { color: '#d4a853', roughness: 0.1,  metalness: 0.9 },   // Gold — metallic
+  { color: '#c678dd', roughness: 0.3,  metalness: 0.1 },   // Purple — matte
+  { color: '#56b6c2', roughness: 0.15, metalness: 0.7 },   // Teal — chrome
+  { color: '#e5c07b', roughness: 0.05, metalness: 1.0 },   // Amber — mirror
+  { color: '#be5046', roughness: 0.4,  metalness: 0.0 },   // Deep coral — soft
+];
 
 interface Props {
   baseColor: React.MutableRefObject<string>;
@@ -33,23 +42,23 @@ const _toCenter = new THREE.Vector3();
 const _toMouse = new THREE.Vector3();
 const _diff = new THREE.Vector3();
 const _push = new THREE.Vector3();
-const _accentColor = new THREE.Color();
 
 export default function PhysicsSandboxZone({ baseColor, scrollProgress }: Props) {
   const groupRef = useRef<THREE.Group>(null);
   const mouseRef = useRef(new THREE.Vector2(0, 0));
   const ballsRef = useRef<Ball[]>([]);
 
-  // Create balls
+  // Create balls with diverse materials
   const balls = useMemo(() => {
     const arr: Ball[] = [];
     for (let i = 0; i < BALL_COUNT; i++) {
       const radius = 0.15 + Math.random() * 0.25;
       const geo = new THREE.SphereGeometry(radius, 16, 16);
+      const palette = BALL_PALETTE[i % BALL_PALETTE.length];
       const mat = new THREE.MeshStandardMaterial({
-        color: '#E91E63',
-        roughness: 0.22,
-        metalness: 0.0,
+        color: palette.color,
+        roughness: palette.roughness,
+        metalness: palette.metalness,
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(
@@ -104,8 +113,6 @@ export default function PhysicsSandboxZone({ baseColor, scrollProgress }: Props)
       0
     );
 
-    _accentColor.set(baseColor.current);
-
     balls.forEach((ball) => {
       // Attraction to center
       _toCenter.copy(_center).sub(ball.mesh.position);
@@ -136,10 +143,6 @@ export default function PhysicsSandboxZone({ baseColor, scrollProgress }: Props)
       ball.velocity.multiplyScalar(DAMPING);
       ball.mesh.position.add(ball.velocity);
       ball.mesh.position.z = 0; // Keep in 2D plane
-
-      // Update color
-      const mat = ball.mesh.material as THREE.MeshStandardMaterial;
-      mat.color.lerp(_accentColor, 0.02);
     });
   });
 

@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import vertexShader from './shaders/heroCross.vert.glsl';
 import fragmentShader from './shaders/heroCross.frag.glsl';
 
-const CrossGeometry = ({ color }: { color: string }) => {
+const CrossGeometry = ({ color, hueShift }: { color: string; hueShift: number }) => {
   const materialRef = React.useRef<THREE.ShaderMaterial>(null);
 
   useFrame((state) => {
@@ -17,7 +17,8 @@ const CrossGeometry = ({ color }: { color: string }) => {
 
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uColor: { value: new THREE.Color(color) }
+    uColor: { value: new THREE.Color(color) },
+    uHueShift: { value: hueShift },
   }), []);
 
   return (
@@ -44,11 +45,13 @@ function PhysicsCross({
   rotation,
   scale,
   color,
+  hueShift,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
   scale: number;
   color: string;
+  hueShift: number;
 }) {
   const rbRef = useRef<any>(null);
 
@@ -77,7 +80,7 @@ function PhysicsCross({
       onClick={handlePointerEnter}
     >
       <group scale={scale}>
-        <CrossGeometry color={color} />
+        <CrossGeometry color={color} hueShift={hueShift} />
       </group>
     </RigidBody>
   );
@@ -98,6 +101,8 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: React.Mutabl
         Math.random() * Math.PI,
       ] as [number, number, number],
       scale: 0.5 + Math.random() * 0.5,
+      // Each cross gets a unique hue shift from -0.08 to +0.08 (subtle teal variations)
+      hueShift: (Math.random() - 0.5) * 0.16,
     }));
   }, []);
 
@@ -126,6 +131,7 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: React.Mutabl
           rotation={props.rotation}
           scale={props.scale}
           color={getColor()}
+          hueShift={props.hueShift}
         />
       ))}
     </Physics>
