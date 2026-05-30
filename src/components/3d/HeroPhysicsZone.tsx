@@ -1,56 +1,32 @@
 import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier';
-import { useFrame } from '@react-three/fiber';
 
-const CrossGeometry = ({ color }: { color: string }) => {
+// Shared material instance — avoids 45 separate MeshPhysicalMaterial allocations
+const sharedCrossMaterial = new THREE.MeshPhysicalMaterial({
+  color: '#2dd4bf',
+  transmission: 0.6,
+  thickness: 0.5,
+  roughness: 0.05,
+  metalness: 0.1,
+  ior: 1.5,
+  envMapIntensity: 1.5,
+  transparent: true,
+  opacity: 0.9,
+  depthWrite: false,
+});
+
+// Shared geometries — 3 box geometries reused across all crosses
+const geoH = new THREE.BoxGeometry(1, 0.2, 0.2);
+const geoV = new THREE.BoxGeometry(0.2, 1, 0.2);
+const geoD = new THREE.BoxGeometry(0.2, 0.2, 1);
+
+const CrossGeometry = () => {
   return (
     <group>
-      <mesh>
-        <boxGeometry args={[1, 0.2, 0.2]} />
-        <meshPhysicalMaterial
-          color={color}
-          transmission={0.6}
-          thickness={0.5}
-          roughness={0.05}
-          metalness={0.1}
-          ior={1.5}
-          envMapIntensity={1.5}
-          transparent
-          opacity={0.9}
-          depthWrite={false}
-        />
-      </mesh>
-      <mesh>
-        <boxGeometry args={[0.2, 1, 0.2]} />
-        <meshPhysicalMaterial
-          color={color}
-          transmission={0.6}
-          thickness={0.5}
-          roughness={0.05}
-          metalness={0.1}
-          ior={1.5}
-          envMapIntensity={1.5}
-          transparent
-          opacity={0.9}
-          depthWrite={false}
-        />
-      </mesh>
-      <mesh>
-        <boxGeometry args={[0.2, 0.2, 1]} />
-        <meshPhysicalMaterial
-          color={color}
-          transmission={0.6}
-          thickness={0.5}
-          roughness={0.05}
-          metalness={0.1}
-          ior={1.5}
-          envMapIntensity={1.5}
-          transparent
-          opacity={0.9}
-          depthWrite={false}
-        />
-      </mesh>
+      <mesh geometry={geoH} material={sharedCrossMaterial} />
+      <mesh geometry={geoV} material={sharedCrossMaterial} />
+      <mesh geometry={geoD} material={sharedCrossMaterial} />
     </group>
   );
 };
@@ -60,12 +36,10 @@ function PhysicsCross({
   position,
   rotation,
   scale,
-  color,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
   scale: number;
-  color: string;
 }) {
   const rbRef = useRef<any>(null);
 
@@ -94,14 +68,24 @@ function PhysicsCross({
       onClick={handlePointerEnter}
     >
       <group scale={scale}>
-        <CrossGeometry color={color} />
+        <CrossGeometry />
       </group>
     </RigidBody>
   );
 }
 
 export default function HeroPhysicsZone({ baseColor }: { baseColor: React.MutableRefObject<string> | string }) {
+  // Update shared material color reactively via ref check
+  const lastColor = useRef('');
   const getColor = () => typeof baseColor === 'string' ? baseColor : baseColor.current;
+
+  // Sync material color when baseColor changes (checked per-render)
+  const currentColor = getColor();
+  if (currentColor !== lastColor.current) {
+    lastColor.current = currentColor;
+    sharedCrossMaterial.color.set(currentColor);
+  }
+
   const crosses = useMemo(() => {
     return Array.from({ length: 15 }).map((_, i) => ({
       position: [
@@ -142,7 +126,6 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: React.Mutabl
           position={props.position}
           rotation={props.rotation}
           scale={props.scale}
-          color={getColor()}
         />
       ))}
     </Physics>

@@ -24,6 +24,8 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
   const [elements, setElements] = useState<HTMLElement[]>([]);
   const groupRefs = useRef<(THREE.Group | null)[]>([]);
   const hoverStates = useRef<boolean[]>([]);
+  // P0-2 fix: cache mesh refs per clone to avoid per-frame traverse
+  const meshRefsPerClone = useRef<THREE.MeshStandardMaterial[][]>([]);
 
   const MAX_DOM_ELEMENTS = 8;
 
@@ -34,21 +36,32 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
   const tile4 = useGLTF(TILE_MODELS[3]);
   const tileScenes = [tile1.scene, tile2.scene, tile3.scene, tile4.scene];
 
-  // Clone models with deep-cloned materials
+  // Clone models with deep-cloned materials and cache mesh material refs
   const clonedScenes = useMemo(() => {
-    return Array.from({ length: MAX_DOM_ELEMENTS }).map((_, i) => {
+    const meshRefs: THREE.MeshStandardMaterial[][] = [];
+
+    const scenes = Array.from({ length: MAX_DOM_ELEMENTS }).map((_, i) => {
       const tileIndex = i % TILE_MODELS.length;
       const clone = tileScenes[tileIndex].clone(true);
+      const mats: THREE.MeshStandardMaterial[] = [];
+
       clone.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
           if (mesh.material) {
-            mesh.material = (mesh.material as THREE.Material).clone();
+            const clonedMat = (mesh.material as THREE.Material).clone() as THREE.MeshStandardMaterial;
+            mesh.material = clonedMat;
+            mats.push(clonedMat);
           }
         }
       });
+
+      meshRefs.push(mats);
       return clone;
     });
+
+    meshRefsPerClone.current = meshRefs;
+    return scenes;
   }, [tile1.scene, tile2.scene, tile3.scene, tile4.scene]);
 
   // Find all elements to sync
@@ -129,29 +142,26 @@ export default function DOMSyncZone({ color }: { color: React.MutableRefObject<s
       );
       group.position.y += Math.sin(time * 0.8 + index * 2) * 0.002;
 
-      // Hover emissive glow — preserve original materials
-      group.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          const m = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
-          if (m) {
-            const targetEmissive = isHovered ? 0.4 : 0.0;
-            m.emissiveIntensity = THREE.MathUtils.lerp(m.emissiveIntensity, targetEmissive, 0.1);
-            if (isHovered && m.emissive) {
-              _color.set(color.current);
-              m.emissive.lerp(_color, 0.1);
-            } else if (m.emissive) {
-              m.emissive.lerp(_color.set(0x000000), 0.1);
-            }
+      // P0-2 fix: use cached material refs instead of traverse
+      const mats = meshRefsPerClone.current[index];
+      if (mats) {
+        const targetEmissive = isHovered ? 0.4 : 0.0;
+        for (let mi = 0; mi < mats.length; mi++) {
+          const m = mats[mi];
+          m.emissiveIntensity = THREE.MathUtils.lerp(m.emissiveIntensity, targetEmissive, 0.1);
+          if (isHovered && m.emissive) {
+            _color.set(color.current);
+            m.emissive.lerp(_color, 0.1);
+          } else if (m.emissive) {
+            m.emissive.lerp(_color.set(0x000000), 0.1);
           }
         }
-      });
+      }
     });
   });
 
-  if (elements.length === 0) return null;
-
   return (
-    <group>
+    <group visible={elements.length > 0}>
       {elements.map((_, i) => {
         if (i >= MAX_DOM_ELEMENTS) return null;
         return (

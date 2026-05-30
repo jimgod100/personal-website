@@ -1,29 +1,17 @@
 /**
- * SceneWorld — Root Three.js scene orchestrating ALL integrated features.
- * 
- * Integrates resources from 3 reference projects:
- * 
- * From lusion-reverse-engineered-main:
- *  - AnimatedNurbsTube (nurbs-canxerian.json curve)
- *  - VideoPanelBones (panel-anim-bones-*.glb models)
- *  - LoadingScreen (shader-based loading animation)
- *  - EnvironmentSetup (quarry_01_1k.hdr, grid.png)
- *  - PhysicsSandboxZone (physics-mask.glb concept)
- *  - HeroPhysicsZone (physics crosses + optimer font)
- *  - Project tile GLBs (tile-1 through tile-4)
+ * SceneWorld — Root Three.js scene orchestrating all 3D effects.
  *
- * From lusion-main:
- *  - FemaleCharacter (female.glb + animation.glb)
- *  - DOMSyncZone (panel models synced to DOM)
- *  - Fonts (GT-Sectra, NB Akademie)
- *  - Textures (floor.jpg, c3.jpg, dark.png)
+ * Components:
+ *  - ParticleField (instanced aurora particles with depth gradient)
+ *  - HeroPhysicsZone (glass crystal crosses with physics)
+ *  - WireframeZone (violet/blue/purple wireframe geometry)
+ *  - AnimatedNurbsTube (iridescent NURBS curve tube)
+ *  - DOMSyncZone (tile GLBs synced to DOM cards)
+ *  - EnvironmentSetup (studio HDRI for reflections)
  *
- * From WebGL-Scroll-Sync-main:
- *  - ScrollSyncImages (glitch shader on DOM images, 0-7.webp)
- *
- * Camera update order:
+ * Camera:
  *  1. useCameraIntro runs a GSAP tween on first mount
- *  2. Once intro completes, useFrame takes full control
+ *  2. Once intro completes, useFrame drives scroll-synced camera
  */
 import React, { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';

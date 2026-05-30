@@ -118,7 +118,7 @@ export default function ParticleField({ densityRef, baseColor }: Props) {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, MAX_COUNT]}>
-      <sphereGeometry args={[0.08, 4, 4]} />
+      <circleGeometry args={[0.08, 4]} />
       <meshBasicMaterial transparent opacity={0.6} depthWrite={false} vertexColors />
     </instancedMesh>
   );
