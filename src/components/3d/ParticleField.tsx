@@ -8,9 +8,9 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 // Gradient palette for particle depth coloring
-const COLOR_NEAR   = new THREE.Color('#3dbab3'); // Teal (front)
-const COLOR_MID    = new THREE.Color('#7c5cbf'); // Violet (middle)
-const COLOR_FAR    = new THREE.Color('#e06c75'); // Rose (back)
+const COLOR_NEAR   = new THREE.Color('#2dd4bf'); // Bright Teal (front)
+const COLOR_MID    = new THREE.Color('#818cf8'); // Indigo (middle)
+const COLOR_FAR    = new THREE.Color('#f472b6'); // Pink Rose (back)
 const _tempColor   = new THREE.Color();
 
 interface Props {

@@ -2,38 +2,54 @@ import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier';
 import { useFrame } from '@react-three/fiber';
-import vertexShader from './shaders/heroCross.vert.glsl';
-import fragmentShader from './shaders/heroCross.frag.glsl';
 
-const CrossGeometry = ({ color, hueShift }: { color: string; hueShift: number }) => {
-  const materialRef = React.useRef<THREE.ShaderMaterial>(null);
-
-  useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
-      materialRef.current.uniforms.uColor.value.set(color);
-    }
-  });
-
-  const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uColor: { value: new THREE.Color(color) },
-    uHueShift: { value: hueShift },
-  }), []);
-
+const CrossGeometry = ({ color }: { color: string }) => {
   return (
     <group>
       <mesh>
         <boxGeometry args={[1, 0.2, 0.2]} />
-        <shaderMaterial ref={materialRef} vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
+        <meshPhysicalMaterial
+          color={color}
+          transmission={0.6}
+          thickness={0.5}
+          roughness={0.05}
+          metalness={0.1}
+          ior={1.5}
+          envMapIntensity={1.5}
+          transparent
+          opacity={0.9}
+          depthWrite={false}
+        />
       </mesh>
       <mesh>
         <boxGeometry args={[0.2, 1, 0.2]} />
-        <shaderMaterial vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
+        <meshPhysicalMaterial
+          color={color}
+          transmission={0.6}
+          thickness={0.5}
+          roughness={0.05}
+          metalness={0.1}
+          ior={1.5}
+          envMapIntensity={1.5}
+          transparent
+          opacity={0.9}
+          depthWrite={false}
+        />
       </mesh>
       <mesh>
         <boxGeometry args={[0.2, 0.2, 1]} />
-        <shaderMaterial vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
+        <meshPhysicalMaterial
+          color={color}
+          transmission={0.6}
+          thickness={0.5}
+          roughness={0.05}
+          metalness={0.1}
+          ior={1.5}
+          envMapIntensity={1.5}
+          transparent
+          opacity={0.9}
+          depthWrite={false}
+        />
       </mesh>
     </group>
   );
@@ -45,13 +61,11 @@ function PhysicsCross({
   rotation,
   scale,
   color,
-  hueShift,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
   scale: number;
   color: string;
-  hueShift: number;
 }) {
   const rbRef = useRef<any>(null);
 
@@ -80,7 +94,7 @@ function PhysicsCross({
       onClick={handlePointerEnter}
     >
       <group scale={scale}>
-        <CrossGeometry color={color} hueShift={hueShift} />
+        <CrossGeometry color={color} />
       </group>
     </RigidBody>
   );
@@ -89,7 +103,7 @@ function PhysicsCross({
 export default function HeroPhysicsZone({ baseColor }: { baseColor: React.MutableRefObject<string> | string }) {
   const getColor = () => typeof baseColor === 'string' ? baseColor : baseColor.current;
   const crosses = useMemo(() => {
-    return Array.from({ length: 25 }).map((_, i) => ({
+    return Array.from({ length: 15 }).map((_, i) => ({
       position: [
         (Math.random() - 0.5) * 6,
         10 + Math.random() * 20,
@@ -101,8 +115,6 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: React.Mutabl
         Math.random() * Math.PI,
       ] as [number, number, number],
       scale: 0.5 + Math.random() * 0.5,
-      // Each cross gets a unique hue shift from -0.08 to +0.08 (subtle teal variations)
-      hueShift: (Math.random() - 0.5) * 0.16,
     }));
   }, []);
 
@@ -131,7 +143,6 @@ export default function HeroPhysicsZone({ baseColor }: { baseColor: React.Mutabl
           rotation={props.rotation}
           scale={props.scale}
           color={getColor()}
-          hueShift={props.hueShift}
         />
       ))}
     </Physics>

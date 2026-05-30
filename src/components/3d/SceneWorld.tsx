@@ -25,22 +25,17 @@
  *  1. useCameraIntro runs a GSAP tween on first mount
  *  2. Once intro completes, useFrame takes full control
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// Core zones (existing)
+// Core zones
 import ParticleField from './ParticleField';
 import WireframeZone from './WireframeZone';
 import HeroPhysicsZone from './HeroPhysicsZone';
-import ScrollTube from './ScrollTube';
 import DOMSyncZone from './DOMSyncZone';
-
-// New integrated zones
 import AnimatedNurbsTube from './AnimatedNurbsTube';
-import VideoPanelBones from './VideoPanelBones';
 import EnvironmentSetup from './EnvironmentSetup';
-import PhysicsSandboxZone from './PhysicsSandboxZone';
 
 import { useCameraScroll } from './useCameraScroll';
 import { useCameraIntro } from './useCameraIntro';
@@ -56,7 +51,7 @@ function getThemeColors() {
 
 export default function SceneWorld() {
   const { scene, camera } = useThree();
-  const { scrollData, velocityData, scrollProgressRef } = useCameraScroll();
+  const { scrollData, scrollProgressRef } = useCameraScroll();
   const introFinished = useCameraIntro();
 
   const accentColor = useRef(getThemeColors().accent);
@@ -143,9 +138,8 @@ export default function SceneWorld() {
       <EnvironmentSetup scrollProgress={scrollProgressRef} />
 
       {/* ═══ Lighting — warm ambient + directional + warm fill ═══ */}
-      <ambientLight intensity={0.5} color="#e8e4df" />
-      <directionalLight position={[10, 20, 20]} intensity={1.8} color="#ffffff" />
-      <pointLight position={[0, 3, 15]} intensity={4} color="#ffd4a0" distance={40} decay={2} />
+      <ambientLight intensity={0.4} color="#f0ede8" />
+      <directionalLight position={[10, 20, 15]} intensity={1.5} color="#ffffff" castShadow />
 
       {/* ═══ Zone 1: Hero ═══ */}
       {/* Particle Field */}
@@ -161,20 +155,9 @@ export default function SceneWorld() {
       {/* Animated NURBS Tube (lusion-reverse-engineered: nurbs-canxerian.json) */}
       <AnimatedNurbsTube scrollProgress={scrollProgressRef} color={accentColor} />
 
-      {/* Video Panel Bones (lusion-reverse-engineered: panel-anim-bones-*.glb) */}
-      <VideoPanelBones scrollProgress={scrollProgressRef} baseColor={accentColor} />
-
       {/* ═══ Zone 3: Projects ═══ */}
       {/* DOM-to-WebGL Sync (lusion-main models synced to cards) */}
       <DOMSyncZone color={accentColor} />
-
-      {/* ═══ Zone 4: Skills / Education ═══ */}
-      {/* Physics Sandbox (lusion-reverse-engineered concept) */}
-      <PhysicsSandboxZone baseColor={accentColor} scrollProgress={scrollProgressRef} />
-
-      {/* ═══ Zone 5: Contact ═══ */}
-      {/* Dynamic Scroll Tube */}
-      <ScrollTube color={accentColor} velocityData={velocityData} />
     </>
   );
 }

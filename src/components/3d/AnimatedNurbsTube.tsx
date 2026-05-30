@@ -131,13 +131,15 @@ export default function AnimatedNurbsTube({ scrollProgress, color }: Props) {
       frustumCulled={false}
     >
       <meshPhysicalMaterial
-        color="#4a6fa5"
-        roughness={0.15}
-        metalness={0.8}
-        iridescence={0.3}
+        color="#6366f1"
+        emissive="#6366f1"
+        emissiveIntensity={0.15}
+        roughness={0.1}
+        metalness={0.85}
+        iridescence={0.4}
         iridescenceIOR={1.3}
-        clearcoat={0.5}
-        clearcoatRoughness={0.1}
+        clearcoat={0.6}
+        clearcoatRoughness={0.08}
         onBeforeCompile={(shader) => {
           shader.uniforms.curveTexture = uniformsRef.current.curveTexture;
           shader.uniforms.stretchRatio = uniformsRef.current.stretchRatio;

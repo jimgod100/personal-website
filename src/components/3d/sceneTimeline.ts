@@ -5,17 +5,15 @@ export interface TimelineState {
   wireframeOpacity: number;
   fogDensity: number;
   nurbsTubeProgress: number;
-  panelBonesOpacity: number;
-  physicsSandboxOpacity: number;
 }
 
 /**
- * Extended timeline with zones for all integrated features:
- * Zone 1 (0.0–0.2):  Hero — particles, physics crosses, female character
- * Zone 2 (0.2–0.4):  About/Experience — NURBS tube draws, wireframes emerge, panels begin
- * Zone 3 (0.4–0.6):  Projects — tile portals, scroll-sync images, panels morph
- * Zone 4 (0.6–0.8):  Skills/Education — physics sandbox, panels continue
- * Zone 5 (0.8–1.0):  Contact — everything fades, deep fog
+ * Simplified timeline with compressed camera Z range (12 → -40).
+ * 
+ * Zone 1 (0.0–0.2):  Hero — particles, glass crosses
+ * Zone 2 (0.2–0.4):  About/Experience — wireframes, NURBS tube draws
+ * Zone 3 (0.4–0.7):  Projects — DOM-synced tile models
+ * Zone 4 (0.7–1.0):  Skills/Education/Contact — fade out
  */
 export const sceneTimeline = [
   {
@@ -24,65 +22,53 @@ export const sceneTimeline = [
     cameraY: -0.5,
     particleDensity: 1.0,
     wireframeOpacity: 0.0,
-    fogDensity: 0.02,
+    fogDensity: 0.015,
     nurbsTubeProgress: 0,
-    panelBonesOpacity: 0,
-    physicsSandboxOpacity: 0,
   },
   {
     scroll: 0.2,
-    cameraZ: 0,
+    cameraZ: 4,
     cameraY: -0.3,
-    particleDensity: 0.85,
+    particleDensity: 0.7,
     wireframeOpacity: 0.6,
-    fogDensity: 0.025,
+    fogDensity: 0.02,
     nurbsTubeProgress: 0.4,
-    panelBonesOpacity: 0.5,
-    physicsSandboxOpacity: 0,
   },
   {
     scroll: 0.4,
-    cameraZ: -15,
-    cameraY: 0.2,
-    particleDensity: 0.6,
+    cameraZ: -8,
+    cameraY: 0.1,
+    particleDensity: 0.4,
     wireframeOpacity: 0.9,
-    fogDensity: 0.035,
-    nurbsTubeProgress: 0.8,
-    panelBonesOpacity: 1.0,
-    physicsSandboxOpacity: 0.3,
+    fogDensity: 0.025,
+    nurbsTubeProgress: 0.85,
   },
   {
     scroll: 0.6,
-    cameraZ: -35,
-    cameraY: -0.2,
-    particleDensity: 0.3,
+    cameraZ: -20,
+    cameraY: -0.1,
+    particleDensity: 0.2,
     wireframeOpacity: 0.5,
-    fogDensity: 0.045,
+    fogDensity: 0.03,
     nurbsTubeProgress: 1.0,
-    panelBonesOpacity: 0.8,
-    physicsSandboxOpacity: 1.0,
   },
   {
     scroll: 0.8,
-    cameraZ: -60,
-    cameraY: 0.3,
-    particleDensity: 0.1,
-    wireframeOpacity: 0.2,
-    fogDensity: 0.055,
+    cameraZ: -30,
+    cameraY: 0.2,
+    particleDensity: 0.05,
+    wireframeOpacity: 0.15,
+    fogDensity: 0.035,
     nurbsTubeProgress: 1.0,
-    panelBonesOpacity: 0.3,
-    physicsSandboxOpacity: 0.5,
   },
   {
     scroll: 1.0,
-    cameraZ: -90,
+    cameraZ: -40,
     cameraY: 0,
     particleDensity: 0.0,
     wireframeOpacity: 0.0,
-    fogDensity: 0.07,
+    fogDensity: 0.04,
     nurbsTubeProgress: 1.0,
-    panelBonesOpacity: 0.0,
-    physicsSandboxOpacity: 0.0,
   },
 ];
 
@@ -110,13 +96,11 @@ export function interpolateTimeline(progress: number): TimelineState {
   const lerp = (a: number, b: number) => a + (b - a) * localP;
 
   return {
-    cameraZ:              lerp(current.cameraZ, next.cameraZ),
-    cameraY:              lerp(current.cameraY, next.cameraY),
-    particleDensity:      lerp(current.particleDensity, next.particleDensity),
-    wireframeOpacity:     lerp(current.wireframeOpacity, next.wireframeOpacity),
-    fogDensity:           lerp(current.fogDensity, next.fogDensity),
-    nurbsTubeProgress:    lerp(current.nurbsTubeProgress, next.nurbsTubeProgress),
-    panelBonesOpacity:    lerp(current.panelBonesOpacity, next.panelBonesOpacity),
-    physicsSandboxOpacity:lerp(current.physicsSandboxOpacity, next.physicsSandboxOpacity),
+    cameraZ:           lerp(current.cameraZ, next.cameraZ),
+    cameraY:           lerp(current.cameraY, next.cameraY),
+    particleDensity:   lerp(current.particleDensity, next.particleDensity),
+    wireframeOpacity:  lerp(current.wireframeOpacity, next.wireframeOpacity),
+    fogDensity:        lerp(current.fogDensity, next.fogDensity),
+    nurbsTubeProgress: lerp(current.nurbsTubeProgress, next.nurbsTubeProgress),
   };
 }

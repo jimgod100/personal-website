@@ -33,8 +33,9 @@ export default function EnvironmentSetup({ scrollProgress }: Props) {
     <>
       {/* HDRI from lusion-reverse-engineered for realistic reflections */}
       <Environment
-        files="/hdri/quarry_01_1k.hdr"
+        files="/hdri/studio_small_08_1k.hdr"
         background={false}
+        environmentIntensity={0.8}
       />
     </>
   );
